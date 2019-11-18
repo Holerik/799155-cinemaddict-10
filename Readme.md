@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Александр Зобнин](https://up.htmlacademy.ru/ecmascript/10/user/799155).
-* Наставник: `Неизвестно`.
+* Наставник: [Андрей Рыжаков](https://up.htmlacademy.ru/ecmascript/10/user/201015).
 
 ---
 
