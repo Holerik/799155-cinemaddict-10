@@ -47,6 +47,10 @@ const getMostCommentedFilmsArray = (count) => {
   return mostCommentedFilms;
 };
 
+const removeMoreButton = () => {
+  document.querySelector(`.films-list`).
+  removeChild(document.querySelector(`.films-list`).querySelector(`.films-list__show-more`));
+};
 const removeFilmElements = () => {
   while (filmsListContainer) {
     let filmElement = filmsListContainer.querySelector(`.film-card`);
@@ -65,7 +69,7 @@ const renderFilmElements = (delta = 0) => {
     renderTemplate(filmsListContainer, createFilmCardTemplate(film), `beforeend`);
   }
   if (lastRenderFilm === filmsCount) {
-    moreButton.classList.add(`visually-hidden`);
+    removeMoreButton();
   }
 };
 
@@ -108,7 +112,7 @@ statisticsElement.textContent = `${filmsCount} movies inside`;
 renderTemplate(siteFooterElement, createFilmPopupTemlate(filmsRenderArray[0]), `afterend`);
 
 if (filmsCount < FILMS_PER_PAGE) {
-  moreButton.classList.add(`visually-hidden`);
+  removeMoreButton();
 }
 
 moreButton.addEventListener(`click`, () => {
