@@ -1,3 +1,5 @@
+// film-list.js
+
 export const createFilmListTemplate = () => {
   return (
     `<section class="films">
