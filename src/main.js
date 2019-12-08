@@ -69,6 +69,9 @@ const renderFilmElements = (delta = 0) => {
     renderTemplate(filmsListContainer, createFilmCardTemplate(film), `beforeend`);
   }
   if (lastRenderFilm === filmsCount) {
+    moreButton.removeEventListener(`click`, () => {
+      renderFilmElements(FILMS_PER_PAGE);
+    });
     removeMoreButton();
   }
 };
