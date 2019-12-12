@@ -1,10 +1,13 @@
 // film-popup.js
+import {createElement} from '../utils.js';
 
-import {createCommentsTemplate} from './comment.js';
-import {createUserRatingTemplate} from './rating.js';
+import CommentsComponent from './comment.js';
+import RatingComponent from './rating.js';
 
-export const createFilmPopupTemlate = (film) => {
-  return (
+const createFilmPopupTemlate = (film) => {
+  const comments = new CommentsComponent(film);
+  const rating = new RatingComponent(film);
+  let template =
     `  <form class="film-details__inner" action="" method="get">
     <div class="form-details__top-container">
       <div class="film-details__close">
@@ -80,11 +83,35 @@ export const createFilmPopupTemlate = (film) => {
     </div>
 
     <div  class="form-details__middle-container">
-    ${createUserRatingTemplate(film)}
+    ${rating.getTemplate()}
     </div>
     <div class="form-details__bottom-container">
-    ${createCommentsTemplate(film)}
+    ${comments.getTemplate()}
     </div>
-  </form>`
-  );
+  </form>`;
+  comments.removeElement();
+  rating.removeElement();
+  return template;
 };
+
+export default class FilmPopup {
+  constructor(film) {
+    this._element = null;
+    this._film = film;
+  }
+
+  getTemplate() {
+    return createFilmPopupTemlate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

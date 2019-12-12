@@ -210,7 +210,6 @@ const MAX_COMMENTS_COUNT = 2;
 const getRandomComments = () => {
   let comments = new Set();
   let commentsCount = Math.floor(Math.random() * MAX_COMMENTS_COUNT);
-  commentsCount++;
   while (comments.size < commentsCount) {
     comments.add(new CommentObject());
   }
@@ -244,6 +243,7 @@ class FilmObject {
 }
 
 export const filmObjectsArray = [];
+
 filmTitles.forEach((title) => {
   let film = new FilmObject(title);
   filmObjectsArray.push(film);
@@ -266,7 +266,7 @@ class ProfileObject {
   }
 }
 
-export const profile = new ProfileObject(Math.floor(Math.random() * filmWriters.length));
+export const profile = new ProfileObject(Math.floor(Math.random() * filmObjectsArray.length));
 
 const filters = [`all`, `watchlist`, `history`, `favorites`];
 

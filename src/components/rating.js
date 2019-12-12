@@ -1,6 +1,7 @@
 // rating.js
+import {createElement} from '../utils.js';
 
-export const createUserRatingTemplate = (film) => {
+const createUserRatingTemplate = (film) => {
   return (
     `  <section class="film-details__user-rating-wrap">
         <div class="film-details__user-rating-controls">
@@ -49,3 +50,25 @@ export const createUserRatingTemplate = (film) => {
     </section>`
   );
 };
+
+export default class UserRating {
+  constructor(film) {
+    this._element = null;
+    this._film = film;
+  }
+
+  getTemplate() {
+    return createUserRatingTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
