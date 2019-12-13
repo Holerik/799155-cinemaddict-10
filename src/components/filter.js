@@ -1,6 +1,7 @@
 // filter.js
+import {createElement} from '../utils.js';
 
-export const createFilterTemplate = (films) => {
+const createFilterTemplate = (films) => {
   let watchListFilms = 0;
   let historyFilms = 0;
   let favorityFilms = 0;
@@ -25,3 +26,25 @@ export const createFilterTemplate = (films) => {
   </ul>`
   );
 };
+
+export default class Filter {
+  constructor(films) {
+    this._element = null;
+    this._films = films;
+  }
+
+  getTemplate() {
+    return createFilterTemplate(this._films);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

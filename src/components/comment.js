@@ -1,5 +1,6 @@
 // comment.js
 import {getMinutes, emojies} from '../data.js';
+import {createElement} from '../utils.js';
 
 const getDate = (date) => {
   let dateStr = `${date.getYear()}\\${date.getMonth()}\\${date.getDay()} ${date.getHours()}:${getMinutes(date)}`;
@@ -37,7 +38,7 @@ const createEmojiListTemplate = () => {
   return element;
 };
 
-export const createCommentsTemplate = (film) => {
+const createCommentsTemplate = (film) => {
   let element =
 `      <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.comments.size}</span></h3>
@@ -61,3 +62,25 @@ export const createCommentsTemplate = (film) => {
       </section>`;
   return element;
 };
+
+export default class Comments {
+  constructor(film) {
+    this._element = null;
+    this._film = film;
+  }
+
+  getTemplate() {
+    return createCommentsTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
