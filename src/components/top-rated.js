@@ -1,5 +1,6 @@
 // top-rated.js
-import {createElement} from '../utils.js';
+
+import AbstractComponent from './abstract.js';
 
 const createTopRatedTemplate = () => {
   return (
@@ -11,23 +12,13 @@ const createTopRatedTemplate = () => {
 </section>`);
 };
 
-export default class TopRatedFilms {
+export default class TopRatedFilms extends AbstractComponent {
   constructor() {
+    super();
     this._element = null;
   }
 
   getTemplate() {
     return createTopRatedTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

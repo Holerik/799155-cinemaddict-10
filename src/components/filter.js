@@ -1,5 +1,6 @@
 // filter.js
-import {createElement} from '../utils.js';
+
+import AbstractComponent from './abstract.js';
 
 const createFilterTemplate = (films) => {
   let watchListFilms = 0;
@@ -27,24 +28,14 @@ const createFilterTemplate = (films) => {
   );
 };
 
-export default class Filter {
+export default class Filter extends AbstractComponent {
   constructor(films) {
+    super();
     this._element = null;
     this._films = films;
   }
 
   getTemplate() {
     return createFilterTemplate(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

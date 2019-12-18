@@ -1,5 +1,6 @@
 // film-list.js
-import {createElement} from '../utils.js';
+
+import AbstractComponent from './abstract.js';
 
 const createFilmListTemplate = () => {
   return (
@@ -13,23 +14,13 @@ const createFilmListTemplate = () => {
   </section>`);
 };
 
-export default class FilmList {
+export default class FilmList extends AbstractComponent {
   constructor() {
+    super();
     this._element = null;
   }
 
   getTemplate() {
     return createFilmListTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

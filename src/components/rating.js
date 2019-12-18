@@ -1,5 +1,6 @@
 // rating.js
-import {createElement} from '../utils.js';
+
+import AbstractComponent from './abstract.js';
 
 const createUserRatingTemplate = (film) => {
   return (
@@ -51,24 +52,14 @@ const createUserRatingTemplate = (film) => {
   );
 };
 
-export default class UserRating {
+export default class UserRating extends AbstractComponent {
   constructor(film) {
+    super();
     this._element = null;
     this._film = film;
   }
 
   getTemplate() {
     return createUserRatingTemplate(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
