@@ -44,6 +44,8 @@ const filmTitles = [
   `Служебный роман`
 ];
 
+// const filmTitles = [];
+
 const filmPosters = [
   `sagebrush-trail.jpg`,
   `santa-claus-conquers-the-martians.jpg`,
