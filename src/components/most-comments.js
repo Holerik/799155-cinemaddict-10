@@ -1,5 +1,6 @@
 // most-comments.js
-import {createElement} from '../utils.js';
+
+import AbstractComponent from './abstract.js';
 
 const createMostCommentedTemplate = () => {
   return (
@@ -12,23 +13,13 @@ const createMostCommentedTemplate = () => {
   );
 };
 
-export default class MostCommentedFilms {
+export default class MostCommentedFilms extends AbstractComponent {
   constructor() {
+    super();
     this._element = null;
   }
 
   getTemplate() {
     return createMostCommentedTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -1,6 +1,7 @@
 // comment.js
 import {getMinutes, emojies} from '../data.js';
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract.js';
+
 
 const getDate = (date) => {
   let dateStr = `${date.getYear()}\\${date.getMonth()}\\${date.getDay()} ${date.getHours()}:${getMinutes(date)}`;
@@ -63,24 +64,14 @@ const createCommentsTemplate = (film) => {
   return element;
 };
 
-export default class Comments {
+export default class Comments extends AbstractComponent {
   constructor(film) {
+    super();
     this._element = null;
     this._film = film;
   }
 
   getTemplate() {
     return createCommentsTemplate(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

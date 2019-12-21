@@ -1,5 +1,6 @@
 // show-more.js
-import {createElement} from '../utils.js';
+
+import AbstractComponent from './abstract.js';
 
 const createShowMoreTemplate = () => {
   return (
@@ -7,23 +8,24 @@ const createShowMoreTemplate = () => {
   );
 };
 
-export default class ShowMoreButton {
+export default class ShowMoreButton extends AbstractComponent {
   constructor() {
+    super();
     this._element = null;
+    this._clickHandler = null;
   }
 
   getTemplate() {
     return createShowMoreTemplate();
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
+  setClickHandler(handler) {
+    this.getElement().addEventListener(`click`, handler);
+    this._clickHandler = handler;
   }
 
-  removeElement() {
-    this._element = null;
+  removeClickHandler() {
+    this.getElement().removeEventListener(`click`, this._clickHandler);
+    this._clickHandler = null;
   }
 }

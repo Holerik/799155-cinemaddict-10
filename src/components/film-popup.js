@@ -1,5 +1,5 @@
 // film-popup.js
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract.js';
 
 import CommentsComponent from './comment.js';
 import RatingComponent from './rating.js';
@@ -94,24 +94,14 @@ const createFilmPopupTemlate = (film) => {
   return template;
 };
 
-export default class FilmPopup {
+export default class FilmPopup extends AbstractComponent {
   constructor(film) {
+    super();
     this._element = null;
     this._film = film;
   }
 
   getTemplate() {
     return createFilmPopupTemlate(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -1,7 +1,5 @@
 // data.js
 
-export const FILMS_PER_PAGE = 5;
-
 export const getMinutes = (date) => {
   const min = date.getMinutes();
   const minutes = `${min > 9 ? `` : `0`}` + min;
