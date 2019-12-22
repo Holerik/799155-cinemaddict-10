@@ -3,8 +3,8 @@
 import {filmObjectsArray, profile} from './data.js';
 import PageController from './controllers/page-controller.js';
 import {renderElement, RenderPosition} from './utils.js';
-import {SortComponent} from './components/sort.js';
-import {NavigationComponent} from './components/navigation.js';
+import SortComponent from './components/sort.js';
+import NavigationComponent from './components/navigation.js';
 import ProfileComponent from './components/profile.js';
 import FilmListComponent from './components/film-list.js';
 

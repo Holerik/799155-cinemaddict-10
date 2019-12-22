@@ -32,12 +32,12 @@ const createNavigationTemplate = (films) => {
 };
 
 
-export class NavigationComponent extends AbstractComponent {
+export default class Navigation extends AbstractComponent {
   constructor(films) {
     super();
     this._currentNaviType = NavigationType.DEFAULT;
     this._films = films;
-    this._controller = null;
+    this._naviTypeChangeHandler = null;
   }
 
   getTemplate() {
@@ -61,8 +61,8 @@ export class NavigationComponent extends AbstractComponent {
           return;
         }
         this._currentNaviType = naviType;
-        if (this._controller) {
-          this._controller.renderFilmElements();
+        if (this._naviTypeChangeHandler) {
+          this._naviTypeChangeHandler();
         }
       });
     }
@@ -73,7 +73,7 @@ export class NavigationComponent extends AbstractComponent {
     this._element = null;
   }
 
-  setController(controller) {
-    this._controller = controller;
+  setNaviTypeChangeHandler(handler) {
+    this._naviTypeChangeHandler = handler;
   }
 }

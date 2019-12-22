@@ -20,11 +20,11 @@ const createSortTemplate = () => {
 };
 
 
-export class SortComponent extends AbstractComponent {
+export default class Sort extends AbstractComponent {
   constructor() {
     super();
     this._currentSortType = SortType.BY_DEFAULT;
-    this._controller = null;
+    this._sortTypeChangeHandler = null;
   }
 
   getTemplate() {
@@ -49,8 +49,8 @@ export class SortComponent extends AbstractComponent {
     this._currentSortType = sortType;
     item = this.getElement().querySelector(`a[data-sort-type*=${this._currentSortType}]`);
     item.classList.add(`sort__button--active`);
-    if (this._controller) {
-      this._controller.renderFilmElements();
+    if (this._sortTypeChangeHandler) {
+      this._sortTypeChangeHandler();
     }
   }
 
@@ -70,5 +70,9 @@ export class SortComponent extends AbstractComponent {
 
   setController(controller) {
     this._controller = controller;
+  }
+
+  setSortTypeChangeHandler(handler) {
+    this._sortTypeChangeHandler = handler;
   }
 }
