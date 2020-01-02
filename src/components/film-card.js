@@ -10,7 +10,7 @@ const createFilmCardTemplate = (film) => {
           <p class="film-card__info">
             <span class="film-card__year">${film.year}</span>
             <span class="film-card__duration">${film.duration}</span>
-            <span class="film-card__genre">${film.genre}</span>
+            <span class="film-card__genre">${film.genres[0]}</span>
           </p>
           <img src="./images/posters/${film.poster}" alt="" class="film-card__poster">
           <p class="film-card__description">${film.description}</p>
@@ -27,11 +27,25 @@ const createFilmCardTemplate = (film) => {
 export default class FilmCard extends AbstractComponent {
   constructor(film) {
     super();
-    this._element = null;
     this._film = film;
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._film);
+  }
+
+  setAddToWatchlistClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__controls-item--add-to-watchlist`).
+    addEventListener(`click`, handler);
+  }
+
+  setAlreadyWatchedClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__controls-item--mark-as-watched`).
+    addEventListener(`click`, handler);
+  }
+
+  setAddToFavoritesClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__controls-item--favorite`).
+    addEventListener(`click`, handler);
   }
 }

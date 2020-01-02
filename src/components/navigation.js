@@ -1,51 +1,51 @@
 // navigation.js
 
-import AbstractComponent from './abstract.js';
+import AbstractSmartComponent from './abstract-smart.js';
 import {createElement} from '../utils.js';
+import {filmsModel} from '../data.js';
 
-export const NavigationType = {
+export const FilterType = {
   WATCHLIST: `watchlist`,
-  HISTORY: `history`,
+  HISTORY: `watched`,
   FAVORITES: `favorites`,
   STATS: `stats`,
   DEFAULT: `all`
 };
 
-const createNavigationTemplate = (films) => {
+const createNavigationTemplate = () => {
   let watchListFilms = 0;
   let historyFilms = 0;
   let favorityFilms = 0;
-  for (let film of films) {
+  for (let film of filmsModel.getFilmsAll()) {
     watchListFilms += film.inWatchList ? 1 : 0;
     historyFilms += film.isWatched ? 1 : 0;
     favorityFilms += film.isFavorite ? 1 : 0;
   }
   return (
     ` <nav class="main-navigation">
-    <a href="#all" data-navi-type= "${NavigationType.DEFAULT}" class="main-navigation__item main-navigation__item--active">All movies</a>
-    <a href="#watchlist" data-navi-type= "${NavigationType.WATCHLIST}" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${watchListFilms}</span></a>
-    <a href="#history" data-navi-type= "${NavigationType.HISTORY}" class="main-navigation__item">History <span class="main-navigation__item-count">${historyFilms}</span></a>
-    <a href="#favorites" data-navi-type= "${NavigationType.FAVORITES}" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${favorityFilms}</span></a>
-    <a href="#stats" data-navi-type= "${NavigationType.STATS}" class="main-navigation__item main-navigation__item--additional">Stats</a>
+    <a href="#all" data-navi-type= "${FilterType.DEFAULT}" class="main-navigation__item main-navigation__item--active">All movies</a>
+    <a href="#watchlist" data-navi-type= "${FilterType.WATCHLIST}" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${watchListFilms}</span></a>
+    <a href="#history" data-navi-type= "${FilterType.HISTORY}" class="main-navigation__item">History <span class="main-navigation__item-count">${historyFilms}</span></a>
+    <a href="#favorites" data-navi-type= "${FilterType.FAVORITES}" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${favorityFilms}</span></a>
+    <a href="#stats" data-navi-type= "${FilterType.STATS}" class="main-navigation__item main-navigation__item--additional">Stats</a>
   </nav>`
   );
 };
 
 
-export default class Navigation extends AbstractComponent {
-  constructor(films) {
+export default class Navigation extends AbstractSmartComponent {
+  constructor() {
     super();
-    this._currentNaviType = NavigationType.DEFAULT;
-    this._films = films;
-    this._naviTypeChangeHandler = null;
+    this._currentFilterType = FilterType.DEFAULT;
+    this._filterTypeChangeHandler = null;
   }
 
   getTemplate() {
-    return createNavigationTemplate(this._films);
+    return createNavigationTemplate();
   }
 
-  get currentNavigationType() {
-    return this._currentNaviType;
+  get currentFilterType() {
+    return this._currentFilterType;
   }
 
   getElement() {
@@ -57,12 +57,12 @@ export default class Navigation extends AbstractComponent {
           return;
         }
         const naviType = evt.target.dataset.naviType;
-        if (this._currentNaviType === naviType) {
+        if (this._currentFilterType === naviType) {
           return;
         }
-        this._currentNaviType = naviType;
-        if (this._naviTypeChangeHandler) {
-          this._naviTypeChangeHandler();
+        this._currentFilterType = naviType;
+        if (this._filterTypeChangeHandler) {
+          this._filterTypeChangeHandler();
         }
       });
     }
@@ -73,7 +73,11 @@ export default class Navigation extends AbstractComponent {
     this._element = null;
   }
 
-  setNaviTypeChangeHandler(handler) {
-    this._naviTypeChangeHandler = handler;
+  setFilterTypeChangeHandler(handler) {
+    this._filterTypeChangeHandler = handler;
+  }
+
+  recoveryListeners() {
+    this.setFilterTypeChangeHandler(this._filterTypeChangeHandler);
   }
 }

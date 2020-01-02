@@ -1,5 +1,7 @@
 // data.js
 
+import {FilterType} from './components/navigation.js';
+
 export const getMinutes = (date) => {
   const min = date.getMinutes();
   const minutes = `${min > 9 ? `` : `0`}` + min;
@@ -112,7 +114,15 @@ const getRandomFilmRelease = (year) => {
 };
 
 const getRandomFilmGenre = () => {
-  return getRandomArrayItem(filmGenres);
+  const size = Math.floor(Math.random() * 2) + 1;
+  let genres = [];
+  while (genres.length < size) {
+    let item = getRandomArrayItem(filmGenres);
+    if (genres.findIndex((elem) => elem === item) === -1) {
+      genres.push(item);
+    }
+  }
+  return genres;
 };
 
 const getRandomFilmCountry = () => {
@@ -221,11 +231,12 @@ const getRandomBolean = () => {
 };
 
 class FilmObject {
-  constructor(title) {
+  constructor(title, index) {
+    this.id = index;
     this.title = title;
     this.description = getRandomFilmDescriptor();
     this.poster = getRandomFilmPoster();
-    this.genre = getRandomFilmGenre();
+    this.genres = getRandomFilmGenre();
     this.duration = getRandomFilmDuration();
     this.year = getRandomFilmYear();
     this.rating = getRandomFilmRating();
@@ -244,8 +255,8 @@ class FilmObject {
 
 export const filmObjectsArray = [];
 
-filmTitles.forEach((title) => {
-  let film = new FilmObject(title);
+filmTitles.forEach((title, index) => {
+  let film = new FilmObject(title, index);
   filmObjectsArray.push(film);
 });
 
@@ -268,11 +279,11 @@ class ProfileObject {
 
 export const profile = new ProfileObject(Math.floor(Math.random() * filmObjectsArray.length));
 
-const filters = [`all`, `watchlist`, `history`, `favorites`];
+const filters = [`all`, `watchlist`, `watched`, `favorites`];
 
-const getCount = (fn) => {
+const getCount = (films, fn) => {
   let count = 0;
-  for (let film of filmObjectsArray) {
+  for (let film of films) {
     if (fn(film)) {
       count++;
     }
@@ -280,24 +291,24 @@ const getCount = (fn) => {
   return count;
 };
 
-const getCountOfFilmsByFilter = (title) => {
+const getCountOfFilmsByFilter = (films, filterType) => {
   let count = 0;
-  switch (title) {
-    case filters[0]:
-      count = filmObjectsArray.length;
+  switch (filterType) {
+    case FilterType.ALL:
+      count = films.length;
       break;
-    case filters[1]:
-      count = getCount((film) => {
+    case FilterType.WATCHLIST:
+      count = getCount(films, (film) => {
         return film.isWatchList;
       });
       break;
-    case filters[2]:
-      count = getCount((film) => {
+    case FilterType.HISTORY:
+      count = getCount(films, (film) => {
         return film.isWatched;
       });
       break;
-    case filters[3]:
-      count = getCount((film) => {
+    case FilterType.FAVORITE:
+      count = getCount(films, (film) => {
         return film.isFavorite;
       });
       break;
@@ -305,15 +316,84 @@ const getCountOfFilmsByFilter = (title) => {
   return count;
 };
 
+const getFilmsByFilter = (films, filterType) => {
+  let filteredFilms = [];
+  switch (filterType) {
+    case FilterType.ALL:
+      filteredFilms = films;
+      break;
+    case FilterType.WATCHLIST:
+      filteredFilms = films.filter(films, (film) => {
+        return film.isWatchList;
+      });
+      break;
+    case FilterType.HISTORY:
+      filteredFilms = films.filter(films, (film) => {
+        return film.isWatched;
+      });
+      break;
+    case FilterType.FAVORITE:
+      filteredFilms = films.filter(films, (film) => {
+        return film.isFavorite;
+      });
+      break;
+  }
+  return filteredFilms;
+};
+
 class FilterObject {
   constructor(title) {
     this.title = title;
-    this.count = getCountOfFilmsByFilter(title);
+    this.count = getCountOfFilmsByFilter(filmObjectsArray, title);
   }
 }
 
 export const filterObjectsArray = [];
-filters.forEach((title) => {
-  const filter = new FilterObject(title);
+filters.forEach((filterType) => {
+  const filter = new FilterObject(filterType);
   filterObjectsArray.push(filter);
 });
+
+export class Model {
+  constructor() {
+    this._films = [];
+    this._currentFilterType = FilterType.ALL;
+  }
+
+  static clone(data) {
+    const film = Object.assign(new FilmObject(), data);
+    film.comments = new Set();
+    data.comments.forEach((comment) => {
+      film.comments.add(comment);
+    });
+    return film;
+  }
+
+  getFilmsAll() {
+    return this._films;
+  }
+
+  getFilms() {
+    return getFilmsByFilter(this._films, this._currentFilterType);
+  }
+
+  setFilms(films) {
+    this._films = Array.from(films);
+  }
+
+  setFilterType(filterType) {
+    this._currentFilterType = filterType;
+  }
+
+  updateFilm(oldFilm, newFilm) {
+    const index = this._films.findIndex((film) => film.id === oldFilm.id);
+    if (index === -1) {
+      return false;
+    }
+    this._films = [].concat(this._films.slice(0, index), newFilm, this._films.slice(index + 1));
+    return true;
+  }
+}
+
+export const filmsModel = new Model();
+filmsModel.setFilms(filmObjectsArray);
