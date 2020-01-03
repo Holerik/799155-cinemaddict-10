@@ -141,6 +141,8 @@ export default class MovieController {
     this._popupComponent.setAlreadyWatchedClickHandler(() => {
       setWatched();
     });
+
+    this._popupComponent.setCloseButtonClickHandler(this._closeButtonClickHandler);
   }
 
   destroy() {

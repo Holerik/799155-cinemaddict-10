@@ -61,9 +61,6 @@ export const emojies = [`angry`, `puke`, `sleeping`, `smile`, `trophy`];
 const filmYears = [
   `1964`, `1972`, `2012`, `1988`, `1956`, `2001`, `1998`];
 
-const months = [`Января`, `Февраля`, `Марта`, `Апреля`, `Мая`, `Июня`, `Июля`, `Августа`,
-  `Сентября`, `Октября`, `Ноября`, `Декабря`];
-
 const filmGenres = [`Comedy`, `Musical`, `Western`, `Drama`, `Cartoon`, `Mystery`, `Film-Noir`];
 
 const filmActors = [`Anne Wigton`, `Heinz Herald`, `Richard Weil`, `Dan Duryea`, `Mary Beth Hughes`,
@@ -108,8 +105,10 @@ const getRandomFilmYear = () => {
   return getRandomArrayItem(filmYears);
 };
 
-const getRandomFilmRelease = (year) => {
-  let release = `${Math.floor(Math.random() * 29) + 1} ` + `${getRandomArrayItem(months)} ` + year;
+const getRandomFilmRelease = (strYear) => {
+  const year = parseInt(strYear, 10);
+  let release = (year - 1970) * 365 + (Math.floor(Math.random() * 11) + 1) * 30 + (Math.floor(Math.random() * 29) + 1);
+  release *= 24 * 3600 * 1000;
   return release;
 };
 
@@ -194,16 +193,21 @@ const getRandomCommentAuthor = () => {
 };
 
 const MAX_HOURS_DURATION = 2;
+const MIN_HOURS_DURATION = 1;
 const MAX_MINUTES_DURATION = 59;
 const MIN_MINUTES_DURATION = 25;
 
 const getRandomFilmDuration = () => {
-  let hours = Math.floor(Math.random() * MAX_HOURS_DURATION);
+  let hours = 0;
+  while (hours < MIN_HOURS_DURATION) {
+    hours = Math.floor(Math.random() * MAX_HOURS_DURATION);
+  }
   let minutes = 0;
   while (minutes < MIN_MINUTES_DURATION) {
     minutes = Math.floor(Math.random() * MAX_MINUTES_DURATION);
   }
-  return `${hours}h ${minutes}m`;
+  // return `${hours}h ${minutes}m`;
+  return (hours * 60 + minutes) * 60000;
 };
 
 class CommentObject {
