@@ -2,7 +2,9 @@
 import moment from "moment";
 
 export const formatTime = (date) => {
-  return moment(date).utc().format(`hh:mm`);
+  const time = moment(date).utc().format(`h:mm`);
+  const ftime = time.slice(0, 1) + `h ` + time.slice(2) + `m`;
+  return ftime;
 };
 
 export const formatDate = (date) => {
