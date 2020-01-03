@@ -28,7 +28,9 @@ export default class PageController {
     this._showedMovieControllers = [];
     this._changeData = this._changeData.bind(this);
     this._changeView = this._changeView.bind(this);
-    this._naviComponent.setFilterTypeChangeHandler(this._filterTypeChangeHandler);
+    this._naviComponent.setFilterTypeChangeHandler(this._filterTypeChangeHandler.bind(this));
+    this._showedTopRatedMovieControllers = [];
+    this._showedMostCommentedMovieControllers = [];
   }
 
   _filterTypeChangeHandler() {
@@ -139,7 +141,7 @@ export default class PageController {
         const movieController = new MovieController(topRatedFilmsListContainer,
             this._siteFooterElement, this._changeData, this._changeView);
         movieController.render(film, Mode.DEFAULT);
-        this._showedMovieControllers.push(movieController);
+        this._showedTopRatedMovieControllers.push(movieController);
       });
 
       const mostCommentedFilmsListContainer = filmsListExtraBlocks[1].querySelector(`.films-list__container`);
@@ -149,7 +151,7 @@ export default class PageController {
         const movieController = new MovieController(mostCommentedFilmsListContainer,
             this._siteFooterElement, this._changeData, this._changeView);
         movieController.render(film, Mode.DEFAULT);
-        this._showedMovieControllers.push(movieController);
+        this._showedMostCommentedMovieControllers.push(movieController);
       });
     }
 

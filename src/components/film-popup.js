@@ -1,7 +1,7 @@
 // film-popup.js
 import AbstractSmartComponent from './abstract-smart.js';
 import {createElement} from '../utils.js';
-
+import {formatTime, formatDate} from '../date.js';
 import CommentsComponent from './comment.js';
 import RatingComponent from './rating.js';
 
@@ -16,6 +16,8 @@ const genres = (film) => {
 const createFilmPopupTemlate = (film) => {
   const comments = new CommentsComponent(film);
   const rating = new RatingComponent(film);
+  const time = formatTime(film.duration);
+  const date = formatDate(film.release);
 
   let template =
     `  <form class="film-details__inner" action="" method="get">
@@ -58,11 +60,11 @@ const createFilmPopupTemlate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${film.release}</td>
+              <td class="film-details__cell">${date}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${film.duration}</td>
+              <td class="film-details__cell">${time}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
