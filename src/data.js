@@ -2,11 +2,13 @@
 
 import {FilterType} from './components/navigation.js';
 
+/*
 export const getMinutes = (date) => {
   const min = date.getMinutes();
   const minutes = `${min > 9 ? `` : `0`}` + min;
   return minutes;
 };
+*/
 
 const profileRating = [`Movie Junior`, `Movie Senior`, `Movie Master`];
 
@@ -43,8 +45,6 @@ const filmTitles = [
   `Берегись автомобиля`,
   `Служебный роман`
 ];
-
-// const filmTitles = [];
 
 const filmPosters = [
   `sagebrush-trail.jpg`,
@@ -210,12 +210,45 @@ const getRandomFilmDuration = () => {
   return (hours * 60 + minutes) * 60000;
 };
 
-class CommentObject {
+const getProfileRating = (count) => {
+  if (count < 5) {
+    return profileRating[0];
+  } else if (count < 10) {
+    return profileRating[1];
+  }
+  return profileRating[2];
+};
+
+class ProfileObject {
+  constructor(count) {
+    this.avatar = `bitmap@2x.png`;
+    this.rating = getProfileRating(count);
+    this.filmsCount = count;
+    this.author = getRandomCommentAuthor();
+  }
+}
+
+const EmptyComment = {
+  text: ``,
+  author: ``,
+  emoj: ``
+};
+
+export class CommentObject {
   constructor() {
     this.text = getRandomCommentText();
     this.author = getRandomCommentAuthor();
     this.date = new Date();
     this.emoji = getRandomEmoji() + `.png`;
+  }
+
+  static clone(data) {
+    const comment = Object.assign(new CommentObject(), data);
+    return comment;
+  }
+
+  static empty() {
+    return this.clone(EmptyComment);
   }
 }
 
@@ -230,8 +263,29 @@ const getRandomComments = () => {
   return comments;
 };
 
-const getRandomBolean = () => {
+const getRandomBoolean = () => {
   return Math.floor(Math.random() * 2) > 0;
+};
+
+const EmptyFilm = {
+  id: -1,
+  title: ``,
+  description: ``,
+  poster: ``,
+  genres: [],
+  duration: 0,
+  year: 0,
+  rating: ``,
+  director: ``,
+  writers: ``,
+  actors: ``,
+  release: 0,
+  country: ``,
+  age: ``,
+  comments: [],
+  isFavorite: false,
+  inWatchList: false,
+  isWatched: false
 };
 
 class FilmObject {
@@ -251,9 +305,9 @@ class FilmObject {
     this.country = getRandomFilmCountry();
     this.age = `16+`;
     this.comments = getRandomComments();
-    this.isFavorite = getRandomBolean();
-    this.inWatchList = getRandomBolean();
-    this.isWatched = getRandomBolean();
+    this.isFavorite = getRandomBoolean();
+    this.inWatchList = getRandomBoolean();
+    this.isWatched = getRandomBoolean();
   }
 }
 
@@ -264,80 +318,41 @@ filmTitles.forEach((title, index) => {
   filmObjectsArray.push(film);
 });
 
-const getProfileRating = (count) => {
-  if (count < 5) {
-    return profileRating[0];
-  } else if (count < 10) {
-    return profileRating[1];
-  }
-  return profileRating[2];
-};
-
-class ProfileObject {
-  constructor(count) {
-    this.avatar = `bitmap@2x.png`;
-    this.rating = getProfileRating(count);
-    this.filmsCount = count;
-  }
-}
-
 export const profile = new ProfileObject(Math.floor(Math.random() * filmObjectsArray.length));
 
-const filters = [`all`, `watchlist`, `watched`, `favorites`];
-
-const getCount = (films, fn) => {
-  let count = 0;
-  for (let film of films) {
-    if (fn(film)) {
-      count++;
-    }
-  }
-  return count;
+export const parseFormData = (formData) => {
+  const emoji = formData.get(`new-comment-emoji`);
+  const comment = new CommentObject();
+  comment.text = formData.get(`comment`);
+  comment.emoji = emoji.slice(emoji.lastIndexOf(`/`) + 1);
+  comment.author = profile.author;
+  return {
+    inWatchList: Boolean(formData.get(`watchlist`)),
+    isFavorite: Boolean(formData.get(`favorite`)),
+    isWatched: Boolean(formData.get(`watched`)),
+    comments: [].concat(comment)
+  };
 };
 
-const getCountOfFilmsByFilter = (films, filterType) => {
-  let count = 0;
-  switch (filterType) {
-    case FilterType.ALL:
-      count = films.length;
-      break;
-    case FilterType.WATCHLIST:
-      count = getCount(films, (film) => {
-        return film.isWatchList;
-      });
-      break;
-    case FilterType.HISTORY:
-      count = getCount(films, (film) => {
-        return film.isWatched;
-      });
-      break;
-    case FilterType.FAVORITE:
-      count = getCount(films, (film) => {
-        return film.isFavorite;
-      });
-      break;
-  }
-  return count;
-};
 
 const getFilmsByFilter = (films, filterType) => {
   let filteredFilms = [];
   switch (filterType) {
-    case FilterType.ALL:
+    case FilterType.DEFAULT:
       filteredFilms = films;
       break;
     case FilterType.WATCHLIST:
-      filteredFilms = films.filter(films, (film) => {
-        return film.isWatchList;
+      filteredFilms = films.filter((film) => {
+        return film.inWatchList;
       });
       break;
     case FilterType.HISTORY:
-      filteredFilms = films.filter(films, (film) => {
+      filteredFilms = films.filter((film) => {
         return film.isWatched;
       });
       break;
-    case FilterType.FAVORITE:
-      filteredFilms = films.filter(films, (film) => {
+    case FilterType.FAVORITES:
+      filteredFilms = films.filter((film) => {
         return film.isFavorite;
       });
       break;
@@ -345,32 +360,29 @@ const getFilmsByFilter = (films, filterType) => {
   return filteredFilms;
 };
 
-class FilterObject {
-  constructor(title) {
-    this.title = title;
-    this.count = getCountOfFilmsByFilter(filmObjectsArray, title);
-  }
-}
-
-export const filterObjectsArray = [];
-filters.forEach((filterType) => {
-  const filter = new FilterObject(filterType);
-  filterObjectsArray.push(filter);
-});
-
 export class Model {
   constructor() {
     this._films = [];
-    this._currentFilterType = FilterType.ALL;
+    this._currentFilterType = FilterType.DEFAULT;
+    this._dataChangeHandlers = [];
+    this._filterChangeHandlers = [];
+  }
+
+  _callHandlers(handlers) {
+    handlers.forEach((handler) => handler());
   }
 
   static clone(data) {
-    const film = Object.assign(new FilmObject(), data);
+    const film = Object.assign(new FilmObject(data.title, data.id), data);
     film.comments = new Set();
     data.comments.forEach((comment) => {
       film.comments.add(comment);
     });
     return film;
+  }
+
+  static empty() {
+    return this.clone(EmptyFilm);
   }
 
   getFilmsAll() {
@@ -387,6 +399,7 @@ export class Model {
 
   setFilterType(filterType) {
     this._currentFilterType = filterType;
+    this._callHandlers(this._filterChangeHandlers);
   }
 
   updateFilm(oldFilm, newFilm) {
@@ -395,9 +408,37 @@ export class Model {
       return false;
     }
     this._films = [].concat(this._films.slice(0, index), newFilm, this._films.slice(index + 1));
+    this._callHandlers(this._dataChangeHandlers);
     return true;
   }
-}
 
-export const filmsModel = new Model();
-filmsModel.setFilms(filmObjectsArray);
+  removeFilm(id) {
+    const index = this._films.findIndex((film) => film.id === id);
+    if (index === -1) {
+      return false;
+    }
+    this._films = [].concat(this._films.slice(0, index), this._films.slice(index + 1));
+    this._callHandlers(this._dataChangeHandlers);
+    return true;
+  }
+
+  addFilm(newFilm) {
+    if (newFilm.id === -1) {
+      let maxId = 0;
+      this._films.forEach((film) => {
+        maxId = Math.max(maxId, film.id);
+      });
+      newFilm.id = maxId + 1;
+    }
+    this._films = [].concat(newFilm, this._films);
+    this._callHandlers(this._dataChangeHandlers);
+  }
+
+  setFilterChangeHandler(handler) {
+    this._filterChangeHandlers.push(handler);
+  }
+
+  setDataChangeHandler(handler) {
+    this._dataChangeHandlers.push(handler);
+  }
+}

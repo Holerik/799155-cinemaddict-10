@@ -11,6 +11,12 @@ export const formatDate = (date) => {
   return moment(date).format(`DD MMMM YYYY`);
 };
 
+export const formatDateForComment = (date) => {
+  const formattedDate = moment(date).format(`YYYY/MMMM/DD`);
+  const formattedTime = moment(date).utc().format(`hh:mm`);
+  return formattedDate + ` ` + formattedTime;
+};
+
 export const isRepeating = (repeatingDays) => {
   return Object.values(repeatingDays).some(Boolean);
 };

@@ -2,7 +2,6 @@
 
 import AbstractSmartComponent from './abstract-smart.js';
 import {createElement} from '../utils.js';
-import {filmsModel} from '../data.js';
 
 export const FilterType = {
   WATCHLIST: `watchlist`,
@@ -12,11 +11,12 @@ export const FilterType = {
   DEFAULT: `all`
 };
 
-const createNavigationTemplate = () => {
+const createNavigationTemplate = (model) => {
   let watchListFilms = 0;
   let historyFilms = 0;
   let favorityFilms = 0;
-  for (let film of filmsModel.getFilmsAll()) {
+  const films = model.getFilmsAll();
+  for (let film of films) {
     watchListFilms += film.inWatchList ? 1 : 0;
     historyFilms += film.isWatched ? 1 : 0;
     favorityFilms += film.isFavorite ? 1 : 0;
@@ -34,14 +34,14 @@ const createNavigationTemplate = () => {
 
 
 export default class Navigation extends AbstractSmartComponent {
-  constructor() {
+  constructor(model) {
     super();
+    this._model = model;
     this._currentFilterType = FilterType.DEFAULT;
-    this._filterTypeChangeHandler = null;
   }
 
   getTemplate() {
-    return createNavigationTemplate();
+    return createNavigationTemplate(this._model);
   }
 
   get currentFilterType() {
@@ -61,9 +61,16 @@ export default class Navigation extends AbstractSmartComponent {
           return;
         }
         this._currentFilterType = naviType;
-        if (this._filterTypeChangeHandler) {
-          this._filterTypeChangeHandler();
-        }
+        const children = Array.from(this._element.children);
+        children.some((target) => {
+          if (target.classList.contains(`main-navigation__item--active`)) {
+            target.classList.remove(`main-navigation__item--active`);
+            return true;
+          }
+          return false;
+        });
+        this._model.setFilterType(this._currentFilterType);
+        evt.target.classList.add(`main-navigation__item--active`);
       });
     }
     return this._element;
@@ -73,11 +80,5 @@ export default class Navigation extends AbstractSmartComponent {
     this._element = null;
   }
 
-  setFilterTypeChangeHandler(handler) {
-    this._filterTypeChangeHandler = handler;
-  }
-
-  recoveryListeners() {
-    this.setFilterTypeChangeHandler(this._filterTypeChangeHandler);
-  }
+  recoveryListeners() {}
 }
