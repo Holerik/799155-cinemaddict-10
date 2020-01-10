@@ -1,9 +1,12 @@
 // film-popup.js
+
+import he from 'he';
 import AbstractSmartComponent from './abstract-smart.js';
 import {createElement} from '../utils.js';
 import {formatTime, formatDate} from '../date.js';
 import CommentsComponent from './comment.js';
 import RatingComponent from './rating.js';
+import {profile, CommentObject} from '../data.js';
 
 const genres = (film) => {
   let genre = ``;
@@ -113,6 +116,9 @@ export default class FilmPopup extends AbstractSmartComponent {
     this._watchListHandler = null;
     this._watchedHandler = null;
     this._favoriteHandler = null;
+    this._deleteCommentHandler = null;
+    this._addCommentHandler = null;
+    this._submitHandler = null;
     this._closeButtonClickHandler = null;
     this._setRating = this._setRating.bind(this);
     this._setEmoji = this._setEmoji.bind(this);
@@ -137,6 +143,11 @@ export default class FilmPopup extends AbstractSmartComponent {
     img.height = `55`;
     img.alt = `emoji`;
     addEmojiElem.appendChild(img);
+    const input = document.createElement(`input`);
+    input.classList.add(`visually-hidden`);
+    input.name = `new-comment-emoji`;
+    input.value = imgSrc;
+    addEmojiElem.appendChild(input);
   }
 
   getElement() {
@@ -154,11 +165,37 @@ export default class FilmPopup extends AbstractSmartComponent {
     return this._element;
   }
 
+  getNewComment() {
+    const comment = new CommentObject();
+    const emojiElem = this._element.querySelector(`.film-details__add-emoji-label`);
+    const textAreaElem = this._element.querySelector(`.film-details__comment-label`);
+    comment.text = he.encode(textAreaElem.control.value);
+    comment.emoji = emojiElem.firstElementChild.src.slice(emojiElem.firstElementChild.src.lastIndexOf(`/`) + 1);
+    comment.author = profile.author;
+    return comment;
+  }
+
+  getDeletingComment(evt) {
+    let comment = null;
+    const commentElements = this._element.querySelectorAll(`.film-details__comment`);
+    const parentElement = evt.target.parentElement.parentElement.parentElement;
+    for (let element of commentElements) {
+      if (parentElement === element) {
+        comment = element;
+        break;
+      }
+    }
+    return comment;
+  }
+
   recoveryListeners() {
     this.setAddToFavoritesClickHandler(this._favoriteHandler);
     this.setAddToWatchlistClickHandler(this._watchListHandler);
     this.setAlreadyWatchedClickHandler(this._watchedHandler);
     this.setCloseButtonClickHandler(this._closeButtonClickHandler);
+    this.setDeleteCommentHandler(this._deleteCommentHandler);
+    this.setAddCommentHandler(this._addCommentHandler);
+    this.setSubmitHandler(this._submitHandler);
   }
 
   setAddToWatchlistClickHandler(handler) {
@@ -183,5 +220,24 @@ export default class FilmPopup extends AbstractSmartComponent {
     this.getElement().querySelector(`.film-details__close-btn`).
     addEventListener(`click`, handler);
     this._closeButtonClickHandler = handler;
+  }
+
+  setDeleteCommentHandler(handler) {
+    const elements = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    elements.forEach((element) => {
+      element.addEventListener(`click`, handler);
+    });
+    this._deleteCommentHandler = handler;
+  }
+
+  setAddCommentHandler(handler) {
+    const element = this.getElement().querySelector(`.film-details__comment-add`);
+    element.addEventListener(`click`, handler);
+    this._addCommentHandler = handler;
+  }
+
+  setSubmitHandler(handler) {
+    this.getElement().addEventListener(`keydown`, handler);
+    this._submitHandler = handler;
   }
 }

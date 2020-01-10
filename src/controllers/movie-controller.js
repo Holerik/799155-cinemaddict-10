@@ -3,7 +3,7 @@
 import FilmCardComponent from '../components/film-card.js';
 import {renderElement, RenderPosition, remove, replace} from '../utils.js';
 import FilmPopupComponent from '../components/film-popup.js';
-import {Model} from '../data.js';
+import {Model, parseFormData} from '../data.js';
 
 export const Mode = {
   ADDING: `adding`,
@@ -131,7 +131,7 @@ export default class MovieController {
       const newFilm = Model.clone(film);
       newFilm.isWatched = !film.isWatched;
       this._dataChangeHandler(this, film, newFilm);
-      this._popupComponent.rerender();
+      // this._popupComponent.rerender();
     };
 
     this._filmComponent.setAlreadyWatchedClickHandler(() => {
@@ -140,6 +140,48 @@ export default class MovieController {
 
     this._popupComponent.setAlreadyWatchedClickHandler(() => {
       setWatched();
+    });
+
+    this._popupComponent.setDeleteCommentHandler((evt) => {
+      evt.preventDefault();
+      const newFilm = Model.clone(film);
+      const commentElement = this._popupComponent.getDeletingComment(evt);
+      // удаляем comment из newFilm.comments
+      // ...
+      for (let comment of newFilm.comments) {
+        if (commentElement.textContent.indexOf(comment.text) > -1) {
+          if (newFilm.comments.delete(comment)) {
+            break;
+          }
+        }
+      }
+      this._dataChangeHandler(this, film, newFilm);
+    });
+
+    this._popupComponent.setAddCommentHandler((evt) => {
+      evt.preventDefault();
+      const newFilm = Model.clone(film);
+      const comment = this._popupComponent.getNewComment();
+      newFilm.comments.add(comment);
+      this._dataChangeHandler(this, film, newFilm);
+    });
+
+    this._popupComponent.setSubmitHandler((evt) => {
+      if (evt.code === `Enter` && evt.ctrlKey) {
+        evt.preventDefault();
+        const formData = new FormData(this._popupComponent.getElement());
+        const data = parseFormData(formData);
+        const newFilm = Model.clone(film);
+        data.comments.forEach((comment) => {
+          newFilm.comments.add(comment);
+        });
+        if (this._mode === Mode.ADDING) {
+          this._dataChangeHandler(this, null, newFilm);
+        } else {
+          newFilm.id = film.id;
+          this._dataChangeHandler(this, film, newFilm);
+        }
+      }
     });
 
     this._popupComponent.setCloseButtonClickHandler(this._closeButtonClickHandler);
