@@ -1,6 +1,7 @@
 // page-controller.js
 
 import {renderElement, RenderPosition} from '../utils.js';
+import {HIDDEN_CLASS} from '../components/abstract.js';
 import {SortType} from '../components/sort.js';
 import ShowMoreComponent from '../components/show-more.js';
 import NoFilmsComponent from '../components/no-films';
@@ -16,6 +17,8 @@ export default class PageController {
   constructor(model, container, sortComponent, naviComponent) {
     this._model = model;
     this._container = container;
+    this._topRatedFilmsListContainer = null;
+    this._mostCommentedFilmsListContainer = null;
     this._showMoreComponent = new ShowMoreComponent();
     this._lastRenderedFilm = FILMS_PER_PAGE;
     this._currentLastRenderedFilm = 0;
@@ -108,7 +111,10 @@ export default class PageController {
     this._model.updateFilm(oldFilm, newFilm);
     if (newFilm !== null) {
       movieController.render(newFilm, movieController.mode);
+    } else {
+      movieController.render(oldFilm, movieController.mode);
     }
+
   }
 
   _changeView() {
@@ -151,21 +157,21 @@ export default class PageController {
       renderElement(this._container.getElement(), new MostCommentsComponent(), RenderPosition.BEFOREEND);
       const filmsListExtraBlocks = this._container.getElement().querySelectorAll(`.films-list--extra`);
 
-      const topRatedFilmsListContainer = filmsListExtraBlocks[0].querySelector(`.films-list__container`);
+      this._topRatedFilmsListContainer = filmsListExtraBlocks[0].querySelector(`.films-list__container`);
       const topRatedFilmsArray = this._getTopRatedFilmsArray(TOP_RATED_COUNT);
 
       topRatedFilmsArray.forEach((film) => {
-        const movieController = new MovieController(topRatedFilmsListContainer,
+        const movieController = new MovieController(this._topRatedFilmsListContainer,
             this._siteFooterElement, this._changeData, this._changeView);
         movieController.render(film, Mode.DEFAULT);
         this._showedTopRatedMovieControllers.push(movieController);
       });
 
-      const mostCommentedFilmsListContainer = filmsListExtraBlocks[1].querySelector(`.films-list__container`);
+      this._mostCommentedFilmsListContainer = filmsListExtraBlocks[1].querySelector(`.films-list__container`);
       const mostCommentedFilmsArray = this._getMostCommentedFilmsArray(MOST_COMMENTED_COUNT);
 
       mostCommentedFilmsArray.forEach((film) => {
-        const movieController = new MovieController(mostCommentedFilmsListContainer,
+        const movieController = new MovieController(this._mostCommentedFilmsListContainer,
             this._siteFooterElement, this._changeData, this._changeView);
         movieController.render(film, Mode.DEFAULT);
         this._showedMostCommentedMovieControllers.push(movieController);
@@ -174,5 +180,21 @@ export default class PageController {
 
     const statisticsElement = this._siteFooterElement.querySelector(`.footer__statistics p`);
     statisticsElement.textContent = `${films.length} movies inside`;
+  }
+
+  show() {
+    this._container.show();
+    this._topRatedFilmsListContainer.classList.remove(HIDDEN_CLASS);
+    this._mostCommentedFilmsListContainer.classList.remove(HIDDEN_CLASS);
+    this._sortComponent.getElement().classList.remove(HIDDEN_CLASS);
+    this._changeView();
+    this._renderFilmElements();
+  }
+
+  hide() {
+    this._container.hide();
+    this._topRatedFilmsListContainer.classList.add(HIDDEN_CLASS);
+    this._mostCommentedFilmsListContainer.classList.add(HIDDEN_CLASS);
+    this._sortComponent.getElement().classList.add(HIDDEN_CLASS);
   }
 }

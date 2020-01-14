@@ -8,7 +8,7 @@ import AbstractComponent from './abstract.js';
 const createCommentTemplate = (comment) => {
   let text = he.encode(comment.text);
   if (text.length > 140) {
-    text = comment.text.slice(0, 138) + ``;
+    text = comment.text.slice(0, 138) + `&hellip;`;
   }
   return `          <li class="film-details__comment">
             <span class="film-details__comment-emoji">
