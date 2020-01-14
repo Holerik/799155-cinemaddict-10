@@ -38,6 +38,8 @@ export default class Navigation extends AbstractSmartComponent {
     super();
     this._model = model;
     this._currentFilterType = FilterType.DEFAULT;
+    this._navigationHandler = null;
+    this.setNavigationHandler = this.setNavigationHandler.bind(this);
   }
 
   getTemplate() {
@@ -71,6 +73,7 @@ export default class Navigation extends AbstractSmartComponent {
         });
         this._model.setFilterType(this._currentFilterType);
         evt.target.classList.add(`main-navigation__item--active`);
+        this._navigationHandler(this._currentFilterType);
       });
     }
     return this._element;
@@ -81,4 +84,8 @@ export default class Navigation extends AbstractSmartComponent {
   }
 
   recoveryListeners() {}
+
+  setNavigationHandler(handler) {
+    this._navigationHandler = handler;
+  }
 }

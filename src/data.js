@@ -2,13 +2,6 @@
 
 import {FilterType} from './components/navigation.js';
 
-/*
-export const getMinutes = (date) => {
-  const min = date.getMinutes();
-  const minutes = `${min > 9 ? `` : `0`}` + min;
-  return minutes;
-};
-*/
 
 const profileRating = [`Movie Junior`, `Movie Senior`, `Movie Master`];
 
@@ -112,6 +105,10 @@ const getRandomFilmRelease = (strYear) => {
   return release;
 };
 
+const getRandomCommentDate = () => {
+  return getRandomFilmRelease(`2019`);
+};
+
 const getRandomFilmGenre = () => {
   const size = Math.floor(Math.random() * 2) + 1;
   let genres = [];
@@ -161,7 +158,7 @@ const getRandomArctorsList = () => {
 
 const MAX_WRITERS_COUNT = 4;
 
-const getRandomFimWriters = () => {
+const getRandomFilmWriters = () => {
   let writersCount = Math.floor(Math.random() * MAX_WRITERS_COUNT);
   writersCount++;
   let writersList = ``;
@@ -176,7 +173,7 @@ const getRandomFimWriters = () => {
   return writersList;
 };
 
-const getRandomFimDirector = () => {
+const getRandomFilmDirector = () => {
   return getRandomArrayItem(filmDirectors);
 };
 
@@ -196,6 +193,8 @@ const MAX_HOURS_DURATION = 2;
 const MIN_HOURS_DURATION = 1;
 const MAX_MINUTES_DURATION = 59;
 const MIN_MINUTES_DURATION = 25;
+const MINUTES_PER_HOUR = 60;
+const MSEC_PER_MINUTE = 60000;
 
 const getRandomFilmDuration = () => {
   let hours = 0;
@@ -206,11 +205,10 @@ const getRandomFilmDuration = () => {
   while (minutes < MIN_MINUTES_DURATION) {
     minutes = Math.floor(Math.random() * MAX_MINUTES_DURATION);
   }
-  // return `${hours}h ${minutes}m`;
-  return (hours * 60 + minutes) * 60000;
+  return (hours * MINUTES_PER_HOUR + minutes) * MSEC_PER_MINUTE;
 };
 
-const getProfileRating = (count) => {
+export const getProfileRating = (count) => {
   if (count < 5) {
     return profileRating[0];
   } else if (count < 10) {
@@ -228,6 +226,8 @@ class ProfileObject {
   }
 }
 
+export const profile = new ProfileObject(0);
+
 const EmptyComment = {
   text: ``,
   author: ``,
@@ -237,8 +237,8 @@ const EmptyComment = {
 export class CommentObject {
   constructor() {
     this.text = getRandomCommentText();
-    this.author = getRandomCommentAuthor();
-    this.date = new Date();
+    this.author = profile.author;
+    this.date = getRandomCommentDate();
     this.emoji = getRandomEmoji() + `.png`;
   }
 
@@ -298,8 +298,8 @@ class FilmObject {
     this.duration = getRandomFilmDuration();
     this.year = getRandomFilmYear();
     this.rating = getRandomFilmRating();
-    this.director = getRandomFimDirector();
-    this.writers = getRandomFimWriters();
+    this.director = getRandomFilmDirector();
+    this.writers = getRandomFilmWriters();
     this.actors = getRandomArctorsList();
     this.release = getRandomFilmRelease(this.year);
     this.country = getRandomFilmCountry();
@@ -316,9 +316,10 @@ export const filmObjectsArray = [];
 filmTitles.forEach((title, index) => {
   let film = new FilmObject(title, index);
   filmObjectsArray.push(film);
+  if (film.isWatched) {
+    profile.count++;
+  }
 });
-
-export const profile = new ProfileObject(Math.floor(Math.random() * filmObjectsArray.length));
 
 export const parseFormData = (formData) => {
   const emoji = formData.get(`new-comment-emoji`);
@@ -403,6 +404,9 @@ export class Model {
   }
 
   updateFilm(oldFilm, newFilm) {
+    if (newFilm === null) {
+      return false;
+    }
     const index = this._films.findIndex((film) => film.id === oldFilm.id);
     if (index === -1) {
       return false;

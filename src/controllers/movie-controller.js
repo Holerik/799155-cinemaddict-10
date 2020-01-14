@@ -3,7 +3,7 @@
 import FilmCardComponent from '../components/film-card.js';
 import {renderElement, RenderPosition, remove, replace} from '../utils.js';
 import FilmPopupComponent from '../components/film-popup.js';
-import {Model, parseFormData} from '../data.js';
+import {Model, parseFormData, profile} from '../data.js';
 
 export const Mode = {
   ADDING: `adding`,
@@ -128,10 +128,14 @@ export default class MovieController {
     });
 
     const setWatched = () => {
-      const newFilm = Model.clone(film);
-      newFilm.isWatched = !film.isWatched;
-      this._dataChangeHandler(this, film, newFilm);
-      // this._popupComponent.rerender();
+      if (!film.isWatched) {
+        const newFilm = Model.clone(film);
+        newFilm.isWatched = !film.isWatched;
+        profile.count++;
+        this._dataChangeHandler(this, film, newFilm);
+      } else {
+        this._dataChangeHandler(this, film, null);
+      }
     };
 
     this._filmComponent.setAlreadyWatchedClickHandler(() => {
