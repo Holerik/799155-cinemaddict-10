@@ -2,7 +2,7 @@
 
 import he from 'he';
 import {emojies} from '../data.js';
-import {formatDateForComment} from '../date.js';
+import {formatTimeForComment} from '../date.js';
 import AbstractComponent from './abstract.js';
 
 const createCommentTemplate = (comment) => {
@@ -12,13 +12,13 @@ const createCommentTemplate = (comment) => {
   }
   return `          <li class="film-details__comment">
             <span class="film-details__comment-emoji">
-              <img src="./images/emoji/${comment.emoji}" width="55" height="55" alt="emoji">
+              <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji">
             </span>
             <div>
               <p class="film-details__comment-text">${text}</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${comment.author}</span>
-                <span class="film-details__comment-day">${formatDateForComment(comment.date)}</span>
+                <span class="film-details__comment-day">${formatTimeForComment(comment.date)}</span>
                 <button class="film-details__comment-delete">Delete</button>
               </p>
             </div>
@@ -43,12 +43,12 @@ const createEmojiListTemplate = () => {
 const createCommentsTemplate = (film) => {
   let element =
 `      <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments: <span class="film-details__comments-count">${film.comments.size}</span></h3>
+        <h3 class="film-details__comments-title">Comments: <span class="film-details__comments-count">${film.comments.length}</span></h3>
 
         <ul class="film-details__comments-list">`;
-  for (let comment of film.comments) {
+  film.comments.forEach((comment) => {
     element += createCommentTemplate(comment);
-  }
+  });
   element +=
 `        </ul>
 

@@ -2,227 +2,66 @@
 
 import {FilterType} from './components/navigation.js';
 
+const profileRating = [`novice`, `fan`, `movie buff`];
 
-const profileRating = [`Movie Junior`, `Movie Senior`, `Movie Master`];
-
-const filmDescriptors = [
-  `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
-  `Cras aliquet varius magna, non porta ligula feugiat eget.`,
-  `Fusce tristique felis at fermentum pharetra.`,
-  `Aliquam id orci ut lectus varius viverra.`,
-  `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
-  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
-  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`,
-  `Sed sed nisi sed augue convallis suscipit in sed felis.`,
-  `Aliquam erat volutpat.`,
-  `Nunc fermentum tortor ac porta dapibus.`,
-  `In rutrum ac purus sit amet tempus.`
-];
-
-const filmTitles = [
-  `Они сражались за Родину`,
-  `Старики-разбойники`,
-  `Щит и меч`,
-  `17 мгновений весны`,
-  `Бриллиантовая рука`,
-  `Любовь и голуби`,
-  `Люди в черном`,
-  `Кавказская пленница`,
-  `Живи и дай умереть другим`,
-  `Из России с любовью`,
-  `Джокер`,
-  `Терминатор`,
-  `Человек-паук`,
-  `Тихий Дон`,
-  `Полет над гнездом кукушки`,
-  `Берегись автомобиля`,
-  `Служебный роман`
-];
-
-const filmPosters = [
-  `sagebrush-trail.jpg`,
-  `santa-claus-conquers-the-martians.jpg`,
-  `the-dance-of-life.jpg`,
-  `the-great-flamarion.jpg`,
-  `the-man-with-the-golden-arm.jpg`,
-  `made-for-each-other.png`,
-  `popeye-meets-sinbad.png`
-];
-
-export const emojies = [`angry`, `puke`, `sleeping`, `smile`, `trophy`];
-
-const filmYears = [
-  `1964`, `1972`, `2012`, `1988`, `1956`, `2001`, `1998`];
-
-const filmGenres = [`Comedy`, `Musical`, `Western`, `Drama`, `Cartoon`, `Mystery`, `Film-Noir`];
-
-const filmActors = [`Anne Wigton`, `Heinz Herald`, `Richard Weil`, `Dan Duryea`, `Mary Beth Hughes`,
-  `Erich von Stroheim`, `Arnold Shwarzneger`, `Matt Daymon`, `Tom Cruise`, `Brad Pitt`];
-
-const filmCountry = [`USA`, `Italy`, `Russia`, `Germany`, `France`, `Brasilia`, `China`];
-
-const filmDirectors = [`Anthony Mann`, `Timur Beckmambetov`, `Martin Scorceze`, `Stiven Spilberg`, `Savva Morozov`];
-
-const filmWriters = [`Anne Wigton`, `Heinz Herald`, `Richard Weil`, `Harvy Vainshtain`];
-
-const commentTexts = [`Booooooooooring`, `Very very old. Meh`, `Almost two hours? Seriously?`];
-
-const commentAuthors = [`A. Pushkin`, `John Doe`, `S. Stallone`, `A. Merkel`];
-
-const getRandomArrayItem = (array) => {
-  return array[Math.floor(Math.random() * array.length)];
-};
-
-const MAX_SENTENCES_COUNT = 3;
-
-const getRandomFilmDescriptor = () => {
-  let sentencesCount = Math.floor(Math.random() * MAX_SENTENCES_COUNT);
-  sentencesCount++;
-  let descriptor = ``;
-  while (sentencesCount > 0) {
-    let index = Math.floor(Math.random() * filmDescriptors.length);
-    if (descriptor.indexOf(filmDescriptors[index]) < 0) {
-      descriptor += filmDescriptors[index];
-      sentencesCount--;
-      descriptor += sentencesCount > 0 ? ` ` : ``;
-    }
-  }
-  return descriptor;
-};
-
-const getRandomFilmPoster = () => {
-  return getRandomArrayItem(filmPosters);
-};
-
-const getRandomFilmYear = () => {
-  return getRandomArrayItem(filmYears);
-};
-
-const getRandomFilmRelease = (strYear) => {
-  const year = parseInt(strYear, 10);
-  let release = (year - 1970) * 365 + (Math.floor(Math.random() * 11) + 1) * 30 + (Math.floor(Math.random() * 29) + 1);
-  release *= 24 * 3600 * 1000;
-  return release;
-};
-
-const getRandomCommentDate = () => {
-  return getRandomFilmRelease(`2019`);
-};
-
-const getRandomFilmGenre = () => {
-  const size = Math.floor(Math.random() * 2) + 1;
-  let genres = [];
-  while (genres.length < size) {
-    let item = getRandomArrayItem(filmGenres);
-    if (genres.findIndex((elem) => elem === item) === -1) {
-      genres.push(item);
-    }
-  }
-  return genres;
-};
-
-const getRandomFilmCountry = () => {
-  return getRandomArrayItem(filmCountry);
-};
-
-const MAX_FILM_RATING = 9;
-
-const getRandomFilmRating = () => {
-  let part1 = 0;
-  while (part1 === 0) {
-    part1 = Math.floor(Math.random() * MAX_FILM_RATING);
-  }
-  let part2 = 0;
-  while (part2 === 0) {
-    part2 = Math.floor(Math.random() * MAX_FILM_RATING);
-  }
-  return `${part1}.${part2}`;
-};
-
-const MAX_AUTORS_COUNT = 4;
-
-const getRandomArctorsList = () => {
-  let actorsCount = Math.floor(Math.random() * MAX_AUTORS_COUNT);
-  actorsCount++;
-  let actorsList = ``;
-  while (actorsCount > 0) {
-    let index = Math.floor(Math.random() * filmActors.length);
-    if (actorsList.indexOf(filmActors[index]) < 0) {
-      actorsList += filmActors[index];
-      actorsCount--;
-      actorsList += actorsCount > 0 ? `, ` : ``;
-    }
-  }
-  return actorsList;
-};
-
-const MAX_WRITERS_COUNT = 4;
-
-const getRandomFilmWriters = () => {
-  let writersCount = Math.floor(Math.random() * MAX_WRITERS_COUNT);
-  writersCount++;
-  let writersList = ``;
-  while (writersCount > 0) {
-    let index = Math.floor(Math.random() * filmWriters.length);
-    if (writersList.indexOf(filmWriters[index]) < 0) {
-      writersList += filmActors[index];
-      writersCount--;
-      writersList += writersCount > 0 ? `, ` : ``;
-    }
-  }
-  return writersList;
-};
-
-const getRandomFilmDirector = () => {
-  return getRandomArrayItem(filmDirectors);
-};
-
-const getRandomEmoji = () => {
-  return getRandomArrayItem(emojies);
-};
-
-const getRandomCommentText = () => {
-  return getRandomArrayItem(commentTexts);
-};
-
-const getRandomCommentAuthor = () => {
-  return getRandomArrayItem(commentAuthors);
-};
-
-const MAX_HOURS_DURATION = 2;
-const MIN_HOURS_DURATION = 1;
-const MAX_MINUTES_DURATION = 59;
-const MIN_MINUTES_DURATION = 25;
-const MINUTES_PER_HOUR = 60;
-const MSEC_PER_MINUTE = 60000;
-
-const getRandomFilmDuration = () => {
-  let hours = 0;
-  while (hours < MIN_HOURS_DURATION) {
-    hours = Math.floor(Math.random() * MAX_HOURS_DURATION);
-  }
-  let minutes = 0;
-  while (minutes < MIN_MINUTES_DURATION) {
-    minutes = Math.floor(Math.random() * MAX_MINUTES_DURATION);
-  }
-  return (hours * MINUTES_PER_HOUR + minutes) * MSEC_PER_MINUTE;
-};
+export const emojies = [`angry`, `puke`, `sleeping`, `smile`];
 
 export const getProfileRating = (count) => {
-  if (count < 5) {
+  if (count < 1) {
+    return ``;
+  } else if (count < 11) {
     return profileRating[0];
-  } else if (count < 10) {
+  } else if (count < 21) {
     return profileRating[1];
   }
   return profileRating[2];
 };
+
+class FilmRating {
+  constructor(id, rating) {
+    this.id = id;
+    this.rating = rating;
+  }
+}
 
 class ProfileObject {
   constructor(count) {
     this.avatar = `bitmap@2x.png`;
     this.rating = getProfileRating(count);
     this.filmsCount = count;
-    this.author = getRandomCommentAuthor();
+    this.author = ``;
+    this._filmRatings = [];
+  }
+
+  setRating(film, rating) {
+    film.personalRating = parseInt(rating, 10);
+    const index = this._filmRatings.findIndex((filmRating) => filmRating.id === film.id);
+    if (index > -1) {
+      this._filmRatings[index].rating = rating;
+    } else {
+      const privateRating = new FilmRating(film.id, rating);
+      this._filmRatings.push(privateRating);
+    }
+  }
+
+  getRating(film) {
+    const index = this._filmRatings.findIndex((filmRating) => filmRating.id === film.id);
+    if (index > -1) {
+      return this._filmRatings[index].rating;
+    }
+    return 0;
+  }
+
+  removeRating(film) {
+    const index = this._filmRatings.findIndex((filmRating) => filmRating.id === film.id);
+    if (index > -1) {
+      this._filmRatings = [].concat(this._filmRatings.slice(0, index), this._filmRatings.slice(index + 1));
+    }
+  }
+
+  reset(model) {
+    this.filmsCount = model.getFilmsAll().filter((film) => film.isWatched).length;
+    this.rating = getProfileRating(this.filmsCount);
   }
 }
 
@@ -231,15 +70,18 @@ export const profile = new ProfileObject(0);
 const EmptyComment = {
   text: ``,
   author: ``,
-  emoj: ``
+  emotion: ``
 };
 
 export class CommentObject {
-  constructor() {
-    this.text = getRandomCommentText();
-    this.author = profile.author;
-    this.date = getRandomCommentDate();
-    this.emoji = getRandomEmoji() + `.png`;
+  constructor(data) {
+    if (data[`id`] !== undefined) {
+      this.id = data[`id`];
+    }
+    this.text = data[`comment`];
+    this.author = data[`author`];
+    this.date = new Date(data[`date`]);
+    this.emotion = data[`emotion`];
   }
 
   static clone(data) {
@@ -247,94 +89,148 @@ export class CommentObject {
     return comment;
   }
 
+  static parse(data) {
+    return new CommentObject(data);
+  }
+
   static empty() {
     return this.clone(EmptyComment);
   }
-}
 
-const MAX_COMMENTS_COUNT = 2;
-
-const getRandomComments = () => {
-  let comments = new Set();
-  let commentsCount = Math.floor(Math.random() * MAX_COMMENTS_COUNT);
-  while (comments.size < commentsCount) {
-    comments.add(new CommentObject());
+  raw() {
+    return {
+      'comment': this.text,
+      'date': this.date.toISOString(),
+      'emotion': this.emotion
+    };
   }
-  return comments;
-};
-
-const getRandomBoolean = () => {
-  return Math.floor(Math.random() * 2) > 0;
-};
+}
 
 const EmptyFilm = {
-  id: -1,
-  title: ``,
-  description: ``,
-  poster: ``,
-  genres: [],
-  duration: 0,
-  year: 0,
-  rating: ``,
-  director: ``,
-  writers: ``,
-  actors: ``,
-  release: 0,
-  country: ``,
-  age: ``,
-  comments: [],
-  isFavorite: false,
-  inWatchList: false,
-  isWatched: false
+  // eslint-disable-next-line camelcase
+  film_info: {
+    [`title`]: ``,
+    [`alternative_title`]: ``,
+    [`description`]: ``,
+    [`poster`]: ``,
+    [`genre`]: [],
+    [`runtime`]: 0,
+    [`total_rating`]: ``,
+    [`director`]: ``,
+    [`writers`]: ``,
+    [`actors`]: ``,
+    release: {
+      [`date`]: 0,
+      [`release_country`]: ``,
+    },
+    [`age_rating`]: 0,
+    [`comments`]: [],
+    // eslint-disable-next-line camelcase
+    user_details: {
+      [`personal_rating`]: 0,
+      [`favorite`]: false,
+      [`watchlist`]: false,
+      [`already_watched`]: false,
+      [`watching_date`]: null
+    }
+  }
 };
 
-class FilmObject {
-  constructor(title, index) {
-    this.id = index;
-    this.title = title;
-    this.description = getRandomFilmDescriptor();
-    this.poster = getRandomFilmPoster();
-    this.genres = getRandomFilmGenre();
-    this.duration = getRandomFilmDuration();
-    this.year = getRandomFilmYear();
-    this.rating = getRandomFilmRating();
-    this.director = getRandomFilmDirector();
-    this.writers = getRandomFilmWriters();
-    this.actors = getRandomArctorsList();
-    this.release = getRandomFilmRelease(this.year);
-    this.country = getRandomFilmCountry();
-    this.age = `16+`;
-    this.comments = getRandomComments();
-    this.isFavorite = getRandomBoolean();
-    this.inWatchList = getRandomBoolean();
-    this.isWatched = getRandomBoolean();
+export class FilmObject {
+  constructor(data) {
+    if (data.id !== undefined) {
+      this.id = data[`id`];
+    }
+    this.title = data[`film_info`][`title`];
+    this.altTitle = data[`film_info`][`alternative_title`];
+    this.description = data[`film_info`][`description`];
+    this.poster = data[`film_info`][`poster`];
+    this.genres = data[`film_info`][`genre`];
+    this.duration = data[`film_info`][`runtime`];
+    this.rating = data[`film_info`][`total_rating`];
+    this.director = data[`film_info`][`director`];
+    this.writers = data[`film_info`][`writers`];
+    this.actors = data[`film_info`][`actors`];
+    this.release = new Date(data[`film_info`][`release`][`date`]);
+    this.country = data[`film_info`][`release`][`release_country`];
+    this.age = data[`film_info`][`age_rating`];
+    this.commentIds = data[`comments`];
+    this.comments = [];
+    if (data[`comments_text`] !== undefined) {
+      this.comments = data[`comments_text`];
+    }
+    this.personalRating = data[`user_details`][`personal_rating`];
+    this.isFavorite = Boolean(data[`user_details`][`favorite`]);
+    this.inWatchList = Boolean(data[`user_details`][`watchlist`]);
+    this.isWatched = Boolean(data[`user_details`][`already_watched`]);
+    this.watchDate = (new Date(data[`user_details`][`watching_date`]));
+  }
+
+  static parse(data) {
+    return new FilmObject(data);
+  }
+
+  static empty() {
+    return new FilmObject(EmptyFilm);
+  }
+
+  static clone(film) {
+    return new FilmObject(film.raw());
+  }
+
+  raw() {
+    const film = {
+      [`id`]: this.id,
+      [`comments`]: this.commentIds,
+      // eslint-disable-next-line camelcase
+      film_info: {
+        [`title`]: this.title,
+        [`alternative_title`]: this.altTitle,
+        [`total_rating`]: this.rating,
+        [`poster`]: this.poster,
+        [`age_rating`]: this.age,
+        [`director`]: this.director,
+        [`writers`]: this.writers,
+        [`actors`]: this.actors,
+        release: {
+          [`date`]: this.release.toISOString(),
+          [`release_country`]: this.country,
+        },
+        [`runtime`]: this.duration,
+        [`genre`]: this.genres,
+        [`description`]: this.description,
+      },
+      // eslint-disable-next-line camelcase
+      user_details: {
+        [`personal_rating`]: this.personalRating,
+        [`favorite`]: this.isFavorite,
+        [`watchlist`]: this.inWatchList,
+        [`already_watched`]: this.isWatched,
+        [`watching_date`]: this.watchDate.toISOString()
+      },
+      [`comments_text`]: this.comments,
+    };
+    return film;
   }
 }
-
-export const filmObjectsArray = [];
-
-filmTitles.forEach((title, index) => {
-  let film = new FilmObject(title, index);
-  filmObjectsArray.push(film);
-  if (film.isWatched) {
-    profile.count++;
-  }
-});
 
 export const parseFormData = (formData) => {
   const emoji = formData.get(`new-comment-emoji`);
-  const comment = new CommentObject();
-  comment.text = formData.get(`comment`);
-  comment.emoji = emoji.slice(emoji.lastIndexOf(`/`) + 1);
-  comment.author = profile.author;
+  const data = {
+    [`comment`]: formData.get(`comment`),
+    [`emotion`]: emoji.slice(emoji.lastIndexOf(`/`) + 1, emoji.lastIndexOf(`.`)),
+    [`author`]: profile.author,
+    [`date`]: (new Date()).getTime()
+  };
+  const comment = new CommentObject(data);
   return {
-    inWatchList: Boolean(formData.get(`watchlist`)),
-    isFavorite: Boolean(formData.get(`favorite`)),
-    isWatched: Boolean(formData.get(`watched`)),
-    comments: [].concat(comment)
+    [`in_watchList`]: Boolean(formData.get(`watchlist`)),
+    [`is_favorite`]: Boolean(formData.get(`favorite`)),
+    [`is_watched`]: Boolean(formData.get(`watched`)),
+    [`personal_rating`]: formData.get(`score`),
+    [`local_comment`]: comment
   };
 };
-
 
 const getFilmsByFilter = (films, filterType) => {
   let filteredFilms = [];
@@ -374,11 +270,7 @@ export class Model {
   }
 
   static clone(data) {
-    const film = Object.assign(new FilmObject(data.title, data.id), data);
-    film.comments = new Set();
-    data.comments.forEach((comment) => {
-      film.comments.add(comment);
-    });
+    const film = new FilmObject(data);
     return film;
   }
 
@@ -427,13 +319,6 @@ export class Model {
   }
 
   addFilm(newFilm) {
-    if (newFilm.id === -1) {
-      let maxId = 0;
-      this._films.forEach((film) => {
-        maxId = Math.max(maxId, film.id);
-      });
-      newFilm.id = maxId + 1;
-    }
     this._films = [].concat(newFilm, this._films);
     this._callHandlers(this._dataChangeHandlers);
   }

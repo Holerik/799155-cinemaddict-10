@@ -1,6 +1,6 @@
 // profile.js
 
-import AbstractComponent from './abstract.js';
+import AbstractSmartComponent from './abstract-smart';
 
 const createProfileTemplate = (profile) => {
   return (
@@ -11,7 +11,7 @@ const createProfileTemplate = (profile) => {
   );
 };
 
-export default class Profile extends AbstractComponent {
+export default class Profile extends AbstractSmartComponent {
   constructor(profile) {
     super();
     this._element = null;
@@ -21,4 +21,6 @@ export default class Profile extends AbstractComponent {
   getTemplate() {
     return createProfileTemplate(this._profile);
   }
+
+  recoveryListeners() {}
 }
