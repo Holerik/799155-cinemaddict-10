@@ -108,19 +108,11 @@ const getFilteredFilms = (model, filter) => {
     if (film.isWatched === false) {
       return false;
     }
-    if (film.comments.size === 0) {
-      return false;
-    }
     if (filter === StatFilter.ALLTIME) {
       return true;
     }
 
-    const date = [...film.comments][0].date;
-    const period = checkDate(date);
-    if (period === filter) {
-      return true;
-    }
-    return false;
+    return checkDate(film.watchDate, filter);
   });
 };
 
@@ -137,51 +129,22 @@ const getAllFilteredFilms = (model) => {
 const createStatisticsTemplate = (model, profile, menuItem, statistics) => {
 
   const getFilteredFilmsCount = (filter) => {
-    let count = statistics[filter].length;
-    switch (filter) {
-      case StatFilter.YEAR:
-        count += statistics[StatFilter.MONTH].length;
-        count += statistics[StatFilter.WEEK].length;
-        count += statistics[StatFilter.TODAY].length;
-        break;
-      case StatFilter.MONTH:
-        count += statistics[StatFilter.WEEK].length;
-        count += statistics[StatFilter.TODAY].length;
-        break;
-      case StatFilter.WEEK:
-        count += statistics[StatFilter.TODAY].length;
-        break;
-    }
-    return count;
-  };
-
-  const getDuration = (filter) => {
-    return statistics[filter].reduce((_duration, film) => {
-      return _duration + film.duration;
-    }, 0);
-  };
-
-  const getFilteredFilmsDuration = (filter) => {
-    let duration = getDuration(filter);
-    switch (filter) {
-      case StatFilter.YEAR:
-        duration += getDuration(StatFilter.MONTH);
-        duration += getDuration(StatFilter.WEEK);
-        duration += getDuration(StatFilter.TODAY);
-        break;
-      case StatFilter.MONTH:
-        duration += getDuration(StatFilter.WEEK);
-        duration += getDuration(StatFilter.TODAY);
-        break;
-      case StatFilter.WEEK:
-        duration += getDuration(StatFilter.TODAY);
-        break;
-    }
-    return duration;
+    return statistics[filter].length;
   };
 
   const MSEC_PER_HOUR = 3600000;
   const MSEC_PER_MINUTE = 60000;
+
+  const getDuration = (filter) => {
+    return statistics[filter].reduce((_duration, film) => {
+      return _duration + film.duration * MSEC_PER_MINUTE;
+
+    }, 0);
+  };
+
+  const getFilteredFilmsDuration = (filter) => {
+    return getDuration(filter);
+  };
 
   const getFormattedDuration = (filter) => {
     const duration = getFilteredFilmsDuration(filter);

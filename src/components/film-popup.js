@@ -6,7 +6,7 @@ import {createElement} from '../utils.js';
 import {formatTime, formatDate} from '../date.js';
 import CommentsComponent from './comment.js';
 import RatingComponent from './rating.js';
-import {profile, CommentObject} from '../data.js';
+import {CommentObject, profile} from '../data.js';
 
 const genres = (film) => {
   let genre = ``;
@@ -16,11 +16,15 @@ const genres = (film) => {
   return genre;
 };
 
+const MSEC_IN_MINUTE = 60 * 1000;
+
 const createFilmPopupTemlate = (film) => {
   const comments = new CommentsComponent(film);
   const rating = new RatingComponent(film);
-  const time = formatTime(film.duration);
+  const time = formatTime(film.duration * MSEC_IN_MINUTE);
   const date = formatDate(film.release);
+  const privateRating = film.personalRating;
+  const yourRate = privateRating > 0 ? `Your rate ` + privateRating.toString() : ``;
 
   let template =
     `  <form class="film-details__inner" action="" method="get">
@@ -30,21 +34,21 @@ const createFilmPopupTemlate = (film) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="./images/posters/${film.poster}" alt="">
+          <img class="film-details__poster-img" src="${film.poster}" alt="movie poster">
 
-          <p class="film-details__age">${film.age}</p>
+          <p class="film-details__age">Age ${film.age}+</p>
         </div>
 
         <div class="film-details__info">
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
-              <h3 class="film-details__title">${film.title}</h3>
+              <h3 class="film-details__title">${film.altTitle}</h3>
               <p class="film-details__title-original">Original: ${film.title}</p>
             </div>
 
             <div class="film-details__rating">
               <p class="film-details__total-rating">${film.rating}</p>
-              <p class="film-details__user-rating">Your rate 9</p>
+              <p class="film-details__user-rating">${yourRate}</p>
             </div>
           </div>
 
@@ -117,20 +121,16 @@ export default class FilmPopup extends AbstractSmartComponent {
     this._watchedHandler = null;
     this._favoriteHandler = null;
     this._deleteCommentHandler = null;
+    this._watchedResetHandler = null;
     this._addCommentHandler = null;
     this._submitHandler = null;
     this._closeButtonClickHandler = null;
-    this._setRating = this._setRating.bind(this);
+    this._setRatingHandler = null;
     this._setEmoji = this._setEmoji.bind(this);
   }
 
   getTemplate() {
     return createFilmPopupTemlate(this._film);
-  }
-
-  _setRating(evt) {
-    let rating = evt.target.value;
-    this.getElement().querySelector(`.film-details__user-rating`).textContent = `Your rate ${rating}`;
   }
 
   _setEmoji(evt) {
@@ -153,10 +153,6 @@ export default class FilmPopup extends AbstractSmartComponent {
   getElement() {
     if (!this._element) {
       this._element = createElement(this.getTemplate());
-      const ratingArray = this._element.querySelectorAll(`.film-details__user-rating-input`);
-      ratingArray.forEach((element) => {
-        element.addEventListener(`click`, this._setRating);
-      });
       const emojiArray = this._element.querySelectorAll(`.film-details__emoji-item`);
       emojiArray.forEach((element) => {
         element.addEventListener(`click`, this._setEmoji);
@@ -196,6 +192,8 @@ export default class FilmPopup extends AbstractSmartComponent {
     this.setDeleteCommentHandler(this._deleteCommentHandler);
     this.setAddCommentHandler(this._addCommentHandler);
     this.setSubmitHandler(this._submitHandler);
+    this.setWatchedResetHandler(this._watchedResetHandler);
+    this.setRatingHandler(this._setRatingHandler);
   }
 
   setAddToWatchlistClickHandler(handler) {
@@ -239,5 +237,21 @@ export default class FilmPopup extends AbstractSmartComponent {
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`keydown`, handler);
     this._submitHandler = handler;
+  }
+
+  setWatchedResetHandler(handler) {
+    this._watchedResetHandler = handler;
+    const undo = this._element.querySelector(`.film-details__watched-reset`);
+    if (undo) {
+      undo.addEventListener(`click`, this._watchedResetHandler);
+    }
+  }
+
+  setRatingHandler(handler) {
+    this._setRatingHandler = handler;
+    const ratingArray = this._element.querySelectorAll(`.film-details__user-rating-input`);
+    ratingArray.forEach((element) => {
+      element.addEventListener(`click`, this._setRatingHandler);
+    });
   }
 }
