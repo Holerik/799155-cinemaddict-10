@@ -1,5 +1,6 @@
 // data.js
 
+import he from 'he';
 import {FilterType} from './components/navigation.js';
 
 const profileRating = [`novice`, `fan`, `movie buff`];
@@ -119,20 +120,20 @@ const EmptyFilm = {
     [`director`]: ``,
     [`writers`]: ``,
     [`actors`]: ``,
+    [`age_rating`]: 0,
     release: {
       [`date`]: 0,
       [`release_country`]: ``,
     },
-    [`age_rating`]: 0,
-    [`comments`]: [],
-    // eslint-disable-next-line camelcase
-    user_details: {
-      [`personal_rating`]: 0,
-      [`favorite`]: false,
-      [`watchlist`]: false,
-      [`already_watched`]: false,
-      [`watching_date`]: null
-    }
+  },
+  [`comments`]: [],
+  // eslint-disable-next-line camelcase
+  user_details: {
+    [`personal_rating`]: 0,
+    [`favorite`]: false,
+    [`watchlist`]: false,
+    [`already_watched`]: false,
+    [`watching_date`]: null
   }
 };
 
@@ -217,7 +218,7 @@ export class FilmObject {
 export const parseFormData = (formData) => {
   const emoji = formData.get(`new-comment-emoji`);
   const data = {
-    [`comment`]: formData.get(`comment`),
+    [`comment`]: he.encode(formData.get(`comment`)),
     [`emotion`]: emoji.slice(emoji.lastIndexOf(`/`) + 1, emoji.lastIndexOf(`.`)),
     [`author`]: profile.author,
     [`date`]: (new Date()).getTime()
@@ -269,9 +270,12 @@ export class Model {
     handlers.forEach((handler) => handler());
   }
 
-  static clone(data) {
-    const film = new FilmObject(data);
-    return film;
+  static parse(data) {
+    return new FilmObject(data);
+  }
+
+  static clone(film) {
+    return new FilmObject(film.raw());
   }
 
   static empty() {

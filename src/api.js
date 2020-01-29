@@ -9,11 +9,15 @@ const Method = {
   DELETE: `DELETE`
 };
 
-export const errorHandle = (error) => {
-  const node = document.createElement(`div`);
-  node.style = `width: 180px; margin: 0 auto; text-align: center; background-color: red;`;
-  node.textContent = error;
-  document.body.insertAdjacentElement(`afterbegin`, node);
+export const errorHandle = (error, signal) => {
+  if (signal === undefined) {
+    const node = document.createElement(`div`);
+    node.style = `width: 180px; margin: 0 auto; text-align: center; background-color: red;`;
+    node.textContent = error;
+    document.body.insertAdjacentElement(`afterbegin`, node);
+  } else {
+    signal();
+  }
 };
 
 export default class Api {

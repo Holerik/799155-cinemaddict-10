@@ -10,7 +10,6 @@ const createNoFilmsTemplate = () => {
 export default class NoTasks extends AbstractComponent {
   constructor() {
     super();
-    this._element = null;
   }
 
   getTemplate() {
