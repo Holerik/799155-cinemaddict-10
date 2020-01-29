@@ -4,7 +4,6 @@ import AbsractSmartComponent from './abstract-smart.js';
 import {createElement} from '../utils.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {getProfileRating} from '../data.js';
 import {checkDate} from '../date.js';
 
 export const StatFilter = {
@@ -161,7 +160,7 @@ const createStatisticsTemplate = (model, profile, menuItem, statistics) => {
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/${profile.avatar}" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">${getProfileRating(profile.count)}</span>
+      <span class="statistic__rank-label">${profile.rating}</span>
     </p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -274,6 +273,7 @@ export default class Statistics extends AbsractSmartComponent {
   }
 
   show() {
+    this.rerender();
     super.show();
     if (this._statistics[this._curentStatMenuItem].length > 0) {
       this._renderChart();

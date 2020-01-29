@@ -7,7 +7,7 @@ import ShowMoreComponent from '../components/show-more.js';
 import NoFilmsComponent from '../components/no-films';
 import MostCommentsComponent from '../components/most-comments.js';
 import TopRatedComponent from '../components/top-rated.js';
-import MovieController, {Mode} from '../controllers/movie-controller.js';
+import MovieController, {Mode, Block, BlockOperation} from '../controllers/movie-controller.js';
 import {errorHandle} from '../api.js';
 import {profile} from '../data.js';
 
@@ -16,13 +16,15 @@ const MOST_COMMENTED_COUNT = 2;
 const FILMS_PER_PAGE = 5;
 
 export default class PageController {
-  constructor(api, model, container, sortComponent, naviComponent) {
+  constructor(api, model, container, profileComponent, sortComponent, naviComponent) {
     this._api = api;
     this._model = model;
     this._container = container;
     this._topRatedFilmsListContainer = null;
     this._mostCommentedFilmsListContainer = null;
     this._showMoreComponent = new ShowMoreComponent();
+    this._topRatedComponent = new TopRatedComponent();
+    this._mostCommentsComponent = new MostCommentsComponent();
     this._lastRenderedFilm = FILMS_PER_PAGE;
     this._currentLastRenderedFilm = 0;
     this._filmsListElement = this._container.getElement().querySelector(`.films-list`);
@@ -30,6 +32,7 @@ export default class PageController {
     this._siteFooterElement = document.querySelector(`.footer`);
     this._naviComponent = naviComponent;
     this._sortComponent = sortComponent;
+    this._profileComponent = profileComponent;
     this._sortComponent.setSortTypeChangeHandler(this._renderFilmElements.bind(this));
     this._showedMovieControllers = [];
     this._changeData = this._changeData.bind(this);
@@ -51,8 +54,6 @@ export default class PageController {
   }
 
   _dataChangeHandler() {
-    // this._renderFilmElements();
-    // this._renderFilmExtraBlocks();
     this._naviComponent.rerender();
   }
 
@@ -114,6 +115,9 @@ export default class PageController {
   _changeData(movieController, oldFilm, newFilm) {
     if (movieController.mode === Mode.ADDING) {
       const comment = newFilm.comments.pop();
+      // пробуем создать на сервере новый комментарий
+      // заблокируем элемент с текстом комментария
+      movieController.disableElement(Block.COMMENT_AREA, BlockOperation.BLOCK);
       this._api.createComment(oldFilm.id, comment)
       .then((film) => {
         this._api.getComments(film.id)
@@ -121,10 +125,14 @@ export default class PageController {
           newFilm.comments = comments;
           profile.author = comments[comments.length - 1].author;
           this._model.updateFilm(oldFilm, newFilm);
+          // разблокируем элемент
+          movieController.disableElement(Block.COMMENT_AREA, BlockOperation.UNBLOCK);
           movieController.render(newFilm, movieController.mode);
         });
       })
-      .catch(errorHandle);
+      .catch((error) => {
+        errorHandle(error, movieController.shakeElement);
+      });
     } else if (movieController.mode === Mode.DELETE) {
       const comment = newFilm.comments.pop();
       this._api.deleteComment(comment.id)
@@ -137,12 +145,32 @@ export default class PageController {
          movieController.render(newFilm, movieController.mode);
        })
        .catch(errorHandle);
+      movieController.setDeleteButtonCaption(`Delete`);
+    } else if (movieController.mode === Mode.RATING) {
+      // заблокируем элемент с рейтингами
+      movieController.disableElement(Block.RATING_BLOCK, BlockOperation.BLOCK);
+      // попытка обновить рейтинг на сервере
+      this._api.updateFilm(oldFilm.id, newFilm)
+        .then((film) => {
+          this._model.updateFilm(oldFilm, film);
+          profile.reset(this._model);
+          this._profileComponent.rerender();
+          // разблокируем элемент
+          movieController.disableElement(Block.RATING_BLOCK, BlockOperation.UNBLOCK);
+          movieController.render(film, Mode.POPUP);
+        })
+       .catch((error) => {
+         errorHandle(error, movieController.shakeElement);
+       });
+
     } else if (newFilm === null) {
       movieController.render(oldFilm, movieController.mode);
     } else {
       this._api.updateFilm(oldFilm.id, newFilm)
         .then((film) => {
           this._model.updateFilm(oldFilm, film);
+          profile.reset(this._model);
+          this._profileComponent.rerender();
           movieController.render(film, movieController.mode);
         })
        .catch(errorHandle);
@@ -217,8 +245,8 @@ export default class PageController {
 
       this._showMoreComponent.setClickHandler(this._showMoreButtonClickHandler);
 
-      renderElement(this._container.getElement(), new TopRatedComponent(), RenderPosition.BEFOREEND);
-      renderElement(this._container.getElement(), new MostCommentsComponent(), RenderPosition.BEFOREEND);
+      renderElement(this._container.getElement(), this._topRatedComponent, RenderPosition.BEFOREEND);
+      renderElement(this._container.getElement(), this._mostCommentsComponent, RenderPosition.BEFOREEND);
       this._renderFilmExtraBlocks();
     }
 
@@ -231,6 +259,8 @@ export default class PageController {
     this._topRatedFilmsListContainer.classList.remove(HIDDEN_CLASS);
     this._mostCommentedFilmsListContainer.classList.remove(HIDDEN_CLASS);
     this._sortComponent.getElement().classList.remove(HIDDEN_CLASS);
+    this._topRatedComponent.getElement().classList.remove(HIDDEN_CLASS);
+    this._mostCommentsComponent.getElement().classList.remove(HIDDEN_CLASS);
     this._changeView();
     this._renderFilmElements();
   }
@@ -240,6 +270,8 @@ export default class PageController {
     this._topRatedFilmsListContainer.classList.add(HIDDEN_CLASS);
     this._mostCommentedFilmsListContainer.classList.add(HIDDEN_CLASS);
     this._sortComponent.getElement().classList.add(HIDDEN_CLASS);
+    this._topRatedComponent.getElement().classList.add(HIDDEN_CLASS);
+    this._mostCommentsComponent.getElement().classList.add(HIDDEN_CLASS);
   }
 
   rerender(film) {

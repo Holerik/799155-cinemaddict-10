@@ -33,15 +33,9 @@ renderElement(siteMainElement, statistics, RenderPosition.BEFOREEND);
 
 const container = new FilmListComponent();
 renderElement(siteMainElement, container, RenderPosition.BEFOREEND);
-const pageController = new PageController(api, filmsModel, container, sortComponent, naviComponent); // ,filmsModel.getFilmsAll());
+const pageController = new PageController(api, filmsModel, container,
+    profileComponent, sortComponent, naviComponent);
 statistics.hide();
-
-export const rerenderComponents = () => {
-  naviComponent.rerender();
-  profileComponent.rerender();
-  statistics.rerender();
-  statistics.hide();
-};
 
 const navigationHandler = (menuItem) => {
   switch (menuItem) {
@@ -67,12 +61,16 @@ api.getFilms()
           .then((comments) => {
             film.comments = comments;
             pageController.rerender(film);
-            rerenderComponents();
+            naviComponent.rerender();
+            profileComponent.rerender();
           })
           .catch(errorHandle);
   });
+  statistics.rerender();
+  statistics.hide();
   pageController.render();
   profileComponent.rerender();
+  container.hide();
 })
 .catch(errorHandle);
 

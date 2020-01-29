@@ -2,7 +2,20 @@
 
 import AbstractComponent from './abstract.js';
 
-const createUserRatingTemplate = (film) => {
+const createUserRatingTemplate = (film, disable) => {
+  const createInputTemplate = () => {
+    let index = 1;
+    let element = ``;
+    while (index < 10) {
+      element +=
+      `              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${index}" id="rating-${index}" ${film.personalRating === index ? `checked` : ``} ${disable ? `disabled` : ``}>
+      <label class="film-details__user-rating-label" for="rating-${index}">${index}</label>
+      `;
+      index++;
+    }
+    return element;
+  };
+
   return (
     `  <section class="film-details__user-rating-wrap">
         <div class="film-details__user-rating-controls">
@@ -20,46 +33,23 @@ const createUserRatingTemplate = (film) => {
             <p class="film-details__user-rating-feelings">How you feel it?</p>
 
             <div class="film-details__user-rating-score">
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="1" id="rating-1">
-              <label class="film-details__user-rating-label" for="rating-1">1</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="2" id="rating-2">
-              <label class="film-details__user-rating-label" for="rating-2">2</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="3" id="rating-3">
-              <label class="film-details__user-rating-label" for="rating-3">3</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="4" id="rating-4">
-              <label class="film-details__user-rating-label" for="rating-4">4</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="5" id="rating-5">
-              <label class="film-details__user-rating-label" for="rating-5">5</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="6" id="rating-6">
-              <label class="film-details__user-rating-label" for="rating-6">6</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="7" id="rating-7">
-              <label class="film-details__user-rating-label" for="rating-7">7</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="8" id="rating-8">
-              <label class="film-details__user-rating-label" for="rating-8">8</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="9" id="rating-9" checked>
-              <label class="film-details__user-rating-label" for="rating-9">9</label>
-
+             ${createInputTemplate()}
             </div>
+          </section>
+        </div>  
     </section>`
   );
 };
 
 export default class UserRating extends AbstractComponent {
-  constructor(film) {
+  constructor(film, disable) {
     super();
     this._element = null;
     this._film = film;
+    this._disable = disable;
   }
 
   getTemplate() {
-    return createUserRatingTemplate(this._film);
+    return createUserRatingTemplate(this._film, this._disable);
   }
 }

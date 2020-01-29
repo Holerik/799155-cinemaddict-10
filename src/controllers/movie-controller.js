@@ -4,14 +4,25 @@ import FilmCardComponent from '../components/film-card.js';
 import {renderElement, RenderPosition, remove, replace} from '../utils.js';
 import FilmPopupComponent from '../components/film-popup.js';
 import {FilmObject as Film, parseFormData, profile} from '../data.js';
-import {filmsModel} from '../main.js';
 
 export const Mode = {
   ADDING: `adding`,
+  RATING: `rating`,
   UPDATE: `update`,
   DELETE: `delete`,
   POPUP: `popup`,
   DEFAULT: `default`
+};
+
+export const Block = {
+  COMMENT_AREA: `comment_area`,
+  RATING_BLOCK: `rating_block`,
+  NONE: `none`
+};
+
+export const BlockOperation = {
+  BLOCK: 1,
+  UNBLOCK: 0
 };
 
 export default class MovieController {
@@ -26,6 +37,7 @@ export default class MovieController {
     this._mode = Mode.DEFAULT;
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._closeButtonClickHandler = this._closeButtonClickHandler.bind(this);
+    this._disabledElement = Block.NONE;
   }
 
   _replacePopupToFilmcard() {
@@ -60,6 +72,10 @@ export default class MovieController {
     return this._mode;
   }
 
+  setDeleteButtonCaption(caption) {
+    this._popupComponent.setDeleteButtonText(caption);
+  }
+
   render(film, mode) {
     this.filmId = film.id;
     const oldFilmComponent = this._filmComponent;
@@ -85,32 +101,34 @@ export default class MovieController {
     title.addEventListener(`click`, renderPopupClickHandle);
 
 
-    const setFavorite = () => {
+    const setFavorite = (evt) => {
+      evt.preventDefault();
       const newFilm = Film.clone(film);
       newFilm.isFavorite = !film.isFavorite;
       this._dataChangeHandler(this, film, newFilm);
     };
 
-    this._filmComponent.setAddToFavoritesClickHandler(() => {
-      setFavorite();
+    this._filmComponent.setAddToFavoritesClickHandler((evt) => {
+      setFavorite(evt);
     });
 
-    this._popupComponent.setAddToFavoritesClickHandler(() => {
-      setFavorite();
+    this._popupComponent.setAddToFavoritesClickHandler((evt) => {
+      setFavorite(evt);
     });
 
-    const addToWatchList = () => {
+    const addToWatchList = (evt) => {
+      evt.preventDefault();
       const newFilm = Film.clone(film);
       newFilm.inWatchList = !film.inWatchList;
       this._dataChangeHandler(this, film, newFilm);
     };
 
-    this._filmComponent.setAddToWatchlistClickHandler(() => {
-      addToWatchList();
+    this._filmComponent.setAddToWatchlistClickHandler((evt) => {
+      addToWatchList(evt);
     });
 
-    this._popupComponent.setAddToWatchlistClickHandler(() => {
-      addToWatchList();
+    this._popupComponent.setAddToWatchlistClickHandler((evt) => {
+      addToWatchList(evt);
     });
 
     const removeRating = () => {
@@ -118,16 +136,18 @@ export default class MovieController {
       newFilm.isWatched = !film.isWatched;
       profile.removeRating(film);
       newFilm.personalRating = 0;
-      profile.reset(filmsModel);
       this._dataChangeHandler(this, film, newFilm);
     };
 
     const setRating = (evt) => {
+      evt.preventDefault();
       const rating = evt.target.value;
+      evt.target.checked = true;
       this._popupComponent.getElement().querySelector(`.film-details__user-rating`).textContent = `Your rate ${rating}`;
       const newFilm = Film.clone(film);
       newFilm.personalRating = parseInt(rating, 10);
       profile.setRating(film, rating);
+      this._mode = Mode.RATING;
       this._dataChangeHandler(this, film, newFilm);
     };
 
@@ -135,7 +155,8 @@ export default class MovieController {
       setRating(evt);
     });
 
-    const setWatched = () => {
+    const setWatched = (evt) => {
+      evt.preventDefault();
       const newFilm = Film.clone(film);
       newFilm.isWatched = !film.isWatched;
       if (!film.isWatched) {
@@ -144,20 +165,20 @@ export default class MovieController {
         profile.removeRating(film);
         newFilm.personalRating = 0;
       }
-      profile.reset(filmsModel);
       this._dataChangeHandler(this, film, newFilm);
     };
 
-    this._filmComponent.setAlreadyWatchedClickHandler(() => {
-      setWatched();
+    this._filmComponent.setAlreadyWatchedClickHandler((evt) => {
+      setWatched(evt);
     });
 
-    this._popupComponent.setAlreadyWatchedClickHandler(() => {
-      setWatched();
+    this._popupComponent.setAlreadyWatchedClickHandler((evt) => {
+      setWatched(evt);
     });
 
     this._popupComponent.setDeleteCommentHandler((evt) => {
       evt.preventDefault();
+      this._popupComponent.setDeleteButtonText(`Deleting ...`);
       const newFilm = Film.clone(film);
       const commentElement = this._popupComponent.getDeletingComment(evt);
       // удаляем comment из newFilm.comments
@@ -182,14 +203,17 @@ export default class MovieController {
       evt.preventDefault();
       const newFilm = Film.clone(film);
       const comment = this._popupComponent.getNewComment();
-      newFilm.comments = [comment];
+      newFilm.comments.push(comment);
       this._mode = Mode.ADDING;
-      this._dataChangeHandler(this, null, newFilm);
+      this._dataChangeHandler(this, film, newFilm);
     });
 
     this._popupComponent.setSubmitHandler((evt) => {
       if (evt.code === `Enter` && evt.ctrlKey) {
         evt.preventDefault();
+        if (this._disabledElement === Block.COMMENT_AREA) {
+          this.disableElement(Block.COMMENT_AREA, BlockOperation.UNBLOCK);
+        }
         const formData = new FormData(this._popupComponent.getElement());
         const data = parseFormData(formData);
         const newFilm = Film.clone(film);
@@ -229,6 +253,36 @@ export default class MovieController {
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replacePopupToFilmcard();
+    }
+  }
+
+  disableElement(type, disable) {
+    this._disabledElement = type;
+    switch (type) {
+      case Block.COMMENT_AREA:
+        this._popupComponent.disableCommentArea(disable);
+        break;
+      case Block.RATING_BLOCK:
+        this._popupComponent.disableRatingBlock(disable);
+        break;
+      default:
+        break;
+    }
+    if (disable === BlockOperation.UNBLOCK) {
+      this._disabledElement = Block.NONE;
+    }
+  }
+
+  shakeElement() {
+    switch (this._disabledElement) {
+      case Block.COMMENT_AREA:
+        this._popupComponent.shakeCommentArea();
+        break;
+      case Block.RATING_BLOCK:
+        this._popupComponent.shakeRatingBlock();
+        break;
+      default:
+        break;
     }
   }
 }

@@ -5,10 +5,23 @@ import {emojies} from '../data.js';
 import {formatTimeForComment} from '../date.js';
 import AbstractComponent from './abstract.js';
 
-const createCommentTemplate = (comment) => {
+export const MIN_COMMENT_LENGTH = 1;
+const MAX_COMMENT_LENGTH = 140;
+
+export const isAllowableCommentLength = (comment) => {
+  const length = comment.length;
+  return length >= MIN_COMMENT_LENGTH &&
+    length <= MAX_COMMENT_LENGTH;
+};
+
+const createCommentTemplate = (comment, deleteText) => {
   let text = he.encode(comment.text);
-  if (text.length > 140) {
-    text = comment.text.slice(0, 138) + `&hellip;`;
+  if (text.length > MAX_COMMENT_LENGTH) {
+    text = comment.text.slice(0, MAX_COMMENT_LENGTH - 2) + `&hellip;`;
+  }
+  let disable = true;
+  if (deleteText.indexOf(`Delete`) > -1) {
+    disable = false;
   }
   return `          <li class="film-details__comment">
             <span class="film-details__comment-emoji">
@@ -19,7 +32,7 @@ const createCommentTemplate = (comment) => {
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${comment.author}</span>
                 <span class="film-details__comment-day">${formatTimeForComment(comment.date)}</span>
-                <button class="film-details__comment-delete">Delete</button>
+                <button class="film-details__comment-delete" ${disable ? `disabled` : ``}>${deleteText}</button>
               </p>
             </div>
           </li>`;
@@ -40,14 +53,14 @@ const createEmojiListTemplate = () => {
   return element;
 };
 
-const createCommentsTemplate = (film) => {
+const createCommentsTemplate = (film, disable, deleteText) => {
   let element =
 `      <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments: <span class="film-details__comments-count">${film.comments.length}</span></h3>
 
         <ul class="film-details__comments-list">`;
   film.comments.forEach((comment) => {
-    element += createCommentTemplate(comment);
+    element += createCommentTemplate(comment, deleteText);
   });
   element +=
 `        </ul>
@@ -56,7 +69,7 @@ const createCommentsTemplate = (film) => {
           <div for="add-emoji" class="film-details__add-emoji-label"></div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${disable ? `disabled` : ``}></textarea>
           </label>
           <button class="film-details__comment-add visually-hidden">&nbsp;Add</button>`;
   element += createEmojiListTemplate();
@@ -67,13 +80,15 @@ const createCommentsTemplate = (film) => {
 };
 
 export default class Comments extends AbstractComponent {
-  constructor(film) {
+  constructor(film, disable, deleteText) {
     super();
     this._film = film;
     this._deleteClickHandle = null;
+    this._disable = disable;
+    this._deleteText = deleteText;
   }
 
   getTemplate() {
-    return createCommentsTemplate(this._film);
+    return createCommentsTemplate(this._film, this._disable, this._deleteText);
   }
 }
