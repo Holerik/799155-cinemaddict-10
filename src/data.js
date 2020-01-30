@@ -109,7 +109,7 @@ export class CommentObject {
 
 const EmptyFilm = {
   // eslint-disable-next-line camelcase
-  film_info: {
+  [`film_info`]: {
     [`title`]: ``,
     [`alternative_title`]: ``,
     [`description`]: ``,
@@ -128,7 +128,7 @@ const EmptyFilm = {
   },
   [`comments`]: [],
   // eslint-disable-next-line camelcase
-  user_details: {
+  [`user_details`]: {
     [`personal_rating`]: 0,
     [`favorite`]: false,
     [`watchlist`]: false,
@@ -184,7 +184,7 @@ export class FilmObject {
       [`id`]: this.id,
       [`comments`]: this.commentIds,
       // eslint-disable-next-line camelcase
-      film_info: {
+      [`film_info`]: {
         [`title`]: this.title,
         [`alternative_title`]: this.altTitle,
         [`total_rating`]: this.rating,
@@ -202,7 +202,7 @@ export class FilmObject {
         [`description`]: this.description,
       },
       // eslint-disable-next-line camelcase
-      user_details: {
+      [`user_details`]: {
         [`personal_rating`]: this.personalRating,
         [`favorite`]: this.isFavorite,
         [`watchlist`]: this.inWatchList,
