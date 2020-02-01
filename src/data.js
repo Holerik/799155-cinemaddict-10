@@ -10,9 +10,11 @@ export const emojies = [`angry`, `puke`, `sleeping`, `smile`];
 export const getProfileRating = (count) => {
   if (count < 1) {
     return ``;
-  } else if (count < 11) {
+  }
+  if (count < 11) {
     return profileRating[0];
-  } else if (count < 21) {
+  }
+  if (count < 21) {
     return profileRating[1];
   }
   return profileRating[2];
@@ -219,7 +221,7 @@ export const parseFormData = (formData) => {
   const emoji = formData.get(`new-comment-emoji`);
   const data = {
     [`comment`]: he.encode(formData.get(`comment`)),
-    [`emotion`]: emoji.slice(emoji.lastIndexOf(`/`) + 1, emoji.lastIndexOf(`.`)),
+    [`emotion`]: emoji === null ? null : emoji.slice(emoji.lastIndexOf(`/`) + 1, emoji.lastIndexOf(`.`)),
     [`author`]: profile.author,
     [`date`]: (new Date()).getTime()
   };

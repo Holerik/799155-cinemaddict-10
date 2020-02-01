@@ -55,8 +55,7 @@ export default class Api {
       headers: new Headers()
     })
       .then((response) => response.json())
-      .then((data) => data.map(Comment.parse))
-      .catch(errorHandle);
+      .then((data) => data.map(Comment.parse));
   }
 
   updateFilm(id, film) {
@@ -67,8 +66,7 @@ export default class Api {
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
-      .then((data) => Film.parse(data))
-      .catch(errorHandle);
+      .then((data) => Film.parse(data));
   }
 
   createComment(id, comment) {
@@ -79,8 +77,7 @@ export default class Api {
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
-      .then((data) => Film.parse(data.movie))
-      .catch(errorHandle);
+      .then((data) => Film.parse(data.movie));
   }
 
   deleteComment(id) {

@@ -38,6 +38,7 @@ export default class MovieController {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._closeButtonClickHandler = this._closeButtonClickHandler.bind(this);
     this._disabledElement = Block.NONE;
+    this.shakeElement = this.shakeElement.bind(this);
   }
 
   _replacePopupToFilmcard() {
@@ -47,6 +48,8 @@ export default class MovieController {
     if (document.contains(this._popupComponent.getElement())) {
       replace(this._filmComponent, this._popupComponent);
     }
+    remove(this._popupComponent);
+    this._popupComponent = null;
     this._mode = Mode.DEFAULT;
   }
 
