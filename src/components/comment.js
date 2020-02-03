@@ -6,7 +6,7 @@ import {formatTimeForComment} from '../date.js';
 import AbstractComponent from './abstract.js';
 
 export const MIN_COMMENT_LENGTH = 1;
-const MAX_COMMENT_LENGTH = 140;
+export const MAX_COMMENT_LENGTH = 140;
 
 export const isAllowableCommentLength = (comment) => {
   const length = comment.length;

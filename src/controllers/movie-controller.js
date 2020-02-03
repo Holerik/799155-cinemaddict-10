@@ -4,6 +4,7 @@ import FilmCardComponent from '../components/film-card.js';
 import {renderElement, RenderPosition, remove, replace, debounce} from '../utils.js';
 import FilmPopupComponent from '../components/film-popup.js';
 import {FilmObject as Film, parseFormData, profile} from '../data.js';
+import {MAX_COMMENT_LENGTH} from '../components/comment.js';
 
 export const Mode = {
   ADDING: `adding`,
@@ -188,7 +189,11 @@ export default class MovieController {
       // удаляем comment из newFilm.comments
       // ...
       const index = newFilm.comments.findIndex((comment) => {
-        if (commentElement.textContent.indexOf(comment.text) > -1) {
+        let textToFind = comment.text;
+        if (comment.text.length > MAX_COMMENT_LENGTH) {
+          textToFind = comment.text.substr(0, MAX_COMMENT_LENGTH - 3);
+        }
+        if (commentElement.textContent.indexOf(textToFind) > -1) {
           return true;
         }
         return false;
