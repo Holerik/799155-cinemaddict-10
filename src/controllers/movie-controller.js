@@ -1,7 +1,7 @@
 // movie-controller.js
 
 import FilmCardComponent from '../components/film-card.js';
-import {renderElement, RenderPosition, remove, replace} from '../utils.js';
+import {renderElement, RenderPosition, remove, replace, debounce} from '../utils.js';
 import FilmPopupComponent from '../components/film-popup.js';
 import {FilmObject as Film, parseFormData, profile} from '../data.js';
 
@@ -46,15 +46,16 @@ export default class MovieController {
     this._popupComponent.getElement().querySelector(`.film-details__close-btn`).
     removeEventListener(`click`, this._closeButtonClickHandler);
     if (document.contains(this._popupComponent.getElement())) {
+      this._filmComponent.recoveryListeners();
       replace(this._filmComponent, this._popupComponent);
     }
     remove(this._popupComponent);
-    this._popupComponent = null;
     this._mode = Mode.DEFAULT;
   }
 
   _replaceFilmcardToPopup() {
     this._viewChangeHandler();
+    this._popupComponent.recoveryListeners();
     replace(this._popupComponent, this._filmComponent);
     this._mode = Mode.POPUP;
   }
@@ -112,11 +113,11 @@ export default class MovieController {
     };
 
     this._filmComponent.setAddToFavoritesClickHandler((evt) => {
-      setFavorite(evt);
+      debounce(setFavorite(evt));
     });
 
     this._popupComponent.setAddToFavoritesClickHandler((evt) => {
-      setFavorite(evt);
+      debounce(setFavorite(evt));
     });
 
     const addToWatchList = (evt) => {
@@ -127,11 +128,11 @@ export default class MovieController {
     };
 
     this._filmComponent.setAddToWatchlistClickHandler((evt) => {
-      addToWatchList(evt);
+      debounce(addToWatchList(evt));
     });
 
     this._popupComponent.setAddToWatchlistClickHandler((evt) => {
-      addToWatchList(evt);
+      debounce(addToWatchList(evt));
     });
 
     const removeRating = () => {
@@ -172,11 +173,11 @@ export default class MovieController {
     };
 
     this._filmComponent.setAlreadyWatchedClickHandler((evt) => {
-      setWatched(evt);
+      debounce(setWatched(evt));
     });
 
     this._popupComponent.setAlreadyWatchedClickHandler((evt) => {
-      setWatched(evt);
+      debounce(setWatched(evt));
     });
 
     this._popupComponent.setDeleteCommentHandler((evt) => {
@@ -233,7 +234,6 @@ export default class MovieController {
         if (oldFilmComponent && oldPopupComponent) {
           replace(this._filmComponent, oldFilmComponent);
           replace(this._popupComponent, oldPopupComponent);
-          this._replacePopupToFilmcard();
         } else {
           renderElement(this._container, this._filmComponent, RenderPosition.BEFOREEND);
         }

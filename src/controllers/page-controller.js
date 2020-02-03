@@ -41,7 +41,6 @@ export default class PageController {
     this._showMoreButtonClickHandler = this._showMoreButtonClickHandler.bind(this);
     this._dataChangeHandler = this._dataChangeHandler.bind(this);
     this._model.setFilterChangeHandler(this._filterTypeChangeHandler);
-    this._model.setDataChangeHandler(this._dataChangeHandler);
     this._showedTopRatedMovieControllers = [];
     this._showedMostCommentedMovieControllers = [];
   }
@@ -156,7 +155,7 @@ export default class PageController {
           this._model.updateFilm(oldFilm, film);
           profile.reset(this._model);
           this._profileComponent.rerender();
-          this.__renderFilmExtraBlocks();
+          this._renderFilmExtraBlocks();
           // разблокируем элемент
           movieController.disableElement(Block.RATING_BLOCK, BlockOperation.UNBLOCK);
           movieController.render(film, Mode.POPUP);
@@ -177,10 +176,13 @@ export default class PageController {
         })
        .catch(errorHandle);
     }
+    this._naviComponent.rerender();
   }
 
   _changeView() {
     this._showedMovieControllers.forEach((movieController) => movieController.setDefaultView());
+    this._showedTopRatedMovieControllers.forEach((movieController) => movieController.setDefaultView());
+    this._showedMostCommentedMovieControllers.forEach((movieController) => movieController.setDefaultView());
   }
 
   _renderFilmElements(filmsPerPage = 0) {

@@ -1,6 +1,6 @@
 // film-card.js
 
-import AbstractComponent from './abstract.js';
+import AbstractSmartComponent from './abstract-smart.js';
 import {formatTime} from '../date.js';
 
 const MSEC_IN_MINUTE = 60 * 1000;
@@ -28,11 +28,13 @@ const createFilmCardTemplate = (film) => {
   );
 };
 
-export default class FilmCard extends AbstractComponent {
+export default class FilmCard extends AbstractSmartComponent {
   constructor(film) {
     super();
     this._film = film;
     this._setWatchedHandler = null;
+    this._watchListHandler = null;
+    this._favoriteHandler = null;
   }
 
   getTemplate() {
@@ -42,16 +44,24 @@ export default class FilmCard extends AbstractComponent {
   setAddToWatchlistClickHandler(handler) {
     this.getElement().querySelector(`.film-card__controls-item--add-to-watchlist`).
     addEventListener(`click`, handler);
+    this._watchListHandler = handler;
   }
 
   setAlreadyWatchedClickHandler(handler) {
     this.getElement().querySelector(`.film-card__controls-item--mark-as-watched`).
     addEventListener(`click`, handler);
+    this._setWatchedHandler = handler;
   }
 
   setAddToFavoritesClickHandler(handler) {
     this.getElement().querySelector(`.film-card__controls-item--favorite`).
     addEventListener(`click`, handler);
+    this._favoriteHandler = handler;
   }
 
+  recoveryListeners() {
+    this.setAddToFavoritesClickHandler(this._favoriteHandler);
+    this.setAddToWatchlistClickHandler(this._watchListHandler);
+    this.setAlreadyWatchedClickHandler(this._watchedHandler);
+  }
 }

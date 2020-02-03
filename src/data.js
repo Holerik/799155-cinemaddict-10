@@ -310,7 +310,6 @@ export class Model {
       return false;
     }
     this._films = [].concat(this._films.slice(0, index), newFilm, this._films.slice(index + 1));
-    this._callHandlers(this._dataChangeHandlers);
     return true;
   }
 
@@ -320,7 +319,6 @@ export class Model {
       return false;
     }
     this._films = [].concat(this._films.slice(0, index), this._films.slice(index + 1));
-    this._callHandlers(this._dataChangeHandlers);
     return true;
   }
 

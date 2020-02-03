@@ -45,3 +45,17 @@ export const remove = (component) => {
   }
 };
 
+const DEBOUNCE_INTERVAL = 500; // ms
+
+export const debounce = (callback) => {
+  let lastTimeout = null;
+  return (...args) => {
+    const parameters = args;
+    if (lastTimeout) {
+      clearTimeout(lastTimeout);
+    }
+    lastTimeout = setTimeout(() => {
+      callback(...parameters);
+    }, DEBOUNCE_INTERVAL);
+  };
+};
